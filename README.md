@@ -4,7 +4,7 @@
 				
   What is it?
   -----------
-  PosetgreSQL ASH Viewer (PASH Viewer) provides graphical view of active session history data within the PostgreSQL database.
+  PostgreSQL ASH Viewer (PASH Viewer) provides graphical view of active session history data within the PostgreSQL database.
 
   PASH Viewer provides graphical Top Activity, similar Top Activity analysis of Oracle Enterprise Manager performance page.
   PASH Viewer store ASH data locally using embedded database Oracle Berkeley DB Java Edition.
