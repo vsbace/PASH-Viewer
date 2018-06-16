@@ -1,4 +1,4 @@
-![screenshot](screenshots\pash-viewer-screenshot-01.png?raw=true "Screenshot")
+![screenshot](screenshots/pash-viewer-screenshot-01.png?raw=true "Screenshot")
 				
 				PASH Viewer
 				
