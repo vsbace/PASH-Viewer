@@ -1,6 +1,5 @@
 /*
  *-------------------
- * The ASHReport.java is part of ASH Viewer
  *-------------------
  * 
  * ASH Viewer is free software: you can redistribute it and/or modify

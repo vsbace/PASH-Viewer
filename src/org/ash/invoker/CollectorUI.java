@@ -1,6 +1,6 @@
 /*
  *-------------------
- * The Collector9iAndSEUI.java is part of ASH Viewer
+ * The CollectorUI.java is part of ASH Viewer
  *-------------------
  * 
  * ASH Viewer is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ import org.ash.gui.StatusBar;
 /**
  * The Class CollectorAsh9iLower.
  */
-public class Collector9iAndSEUI implements Runnable, Collector {
+public class CollectorUI implements Runnable, Collector {
 
   /** The m_is running. */
   private boolean m_isRunning = false;
@@ -80,7 +80,7 @@ public class Collector9iAndSEUI implements Runnable, Collector {
    * @param database0 the database0
    * @param _latency the _latency
    */
-  public Collector9iAndSEUI( ASHDatabase database0, final long _latency) {
+  public CollectorUI( ASHDatabase database0, final long _latency) {
     super();
     this.database = database0;
     this.m_latency = _latency;
@@ -122,13 +122,16 @@ public void finalize() throws Throwable {
 	    this.m_stop = false;
 	    long m_latencyBDBCollector = 1000;
 	    long m_latencyTmp = 0;
-	    
+
+
 	    while (!this.m_stop) {
 	      lasttime = System.currentTimeMillis();
 	      
-	      database.loadToLocalBDBCollector();
+		// Это здесь по ошибке ?! Зачем второй раз в секунду делать снимок сессий в локальную БД ?
+		// database.loadToLocalBDBCollector();
 	     
 	      if (m_latencyTmp >= this.m_latency){
+
 	    	  // Wait while user mouse dragged
 	          while (isSelectionStackedChart()){
 	        	  try {
@@ -147,8 +150,9 @@ public void finalize() throws Throwable {
 	      }
 	      
 	      try {
-	        Thread.sleep(Math.max(m_latencyBDBCollector/*this.m_latency*/ - System.currentTimeMillis() + lasttime, 0));
-	        m_latencyTmp = m_latencyTmp + m_latencyBDBCollector;
+		// засыпаем на 1 секунду - время, прошедшее с прошлого раза
+	        Thread.sleep(Math.max(m_latencyBDBCollector/*this.m_latency*/ - (System.currentTimeMillis() - lasttime), 0));
+	        m_latencyTmp = m_latencyTmp + m_latencyBDBCollector; /* + 1000 */
 	      } catch (InterruptedException e) {
 	    	 System.out.println("Draw print stack of threads!!!");
 	    	 e.printStackTrace();
@@ -159,6 +163,7 @@ public void finalize() throws Throwable {
 	        this.stop();
 	      }      
 	    }
+
 	  }
 
   /* (non-Javadoc)

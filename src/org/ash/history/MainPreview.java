@@ -253,8 +253,7 @@ public class MainPreview extends JPanel {
 	private void loadPreviewStacked(long start, long end) {
 		try {
 			
-			TopActivityPreview topActivityPreview = new TopActivityPreview(
-					this.ashDBPrevPeriod);
+			TopActivityPreview topActivityPreview = new TopActivityPreview(this.ashDBPrevPeriod);
 			
 			// Set Max CPU
 			topActivityPreview.setThresholdMaxCpu(getMaxCPUValue(this.ashDBPrevPeriod));
@@ -374,15 +373,13 @@ public class MainPreview extends JPanel {
 	 * @return
 	 */
 	private String getTitle(ASHDatabaseH databaseHistory){
-		
-		String tmpValue = "Preview "
-			+databaseHistory.getParameter("ASH.version")+" ::: "
-			+ databaseHistory.getParameter("ASH.name")+ "|"
-			+ databaseHistory.getParameter("ASH.host")+ "|"
-			+ databaseHistory.getParameter("ASH.port")+ "|"
-			+ databaseHistory.getParameter("ASH.sid")+ "|"
-			+ databaseHistory.getParameter("ASH.username");
-		
+
+		String tmpValue = "Preview ::: "
+			+ databaseHistory.getParameter("ASH.username")+ "@"
+			+ databaseHistory.getParameter("ASH.host")+ ":"
+			+ databaseHistory.getParameter("ASH.port")+ "/"
+			+ databaseHistory.getParameter("ASH.db");
+
 		return tmpValue;
 	}
 	

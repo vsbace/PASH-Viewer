@@ -1,6 +1,6 @@
 /*
  *-------------------
- * The Collector9iAndSEDB.java is part of ASH Viewer
+ * The CollectorDB.java is part of ASH Viewer
  *-------------------
  * 
  * ASH Viewer is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import org.ash.gui.StatusBar;
 /**
  * The Class CollectorAsh9iLower.
  */
-public class Collector9iAndSEDB implements Runnable, Collector {
+public class CollectorDB implements Runnable, Collector {
 
   /** The m_is running. */
   private boolean m_isRunning = false;
@@ -79,7 +79,7 @@ public class Collector9iAndSEDB implements Runnable, Collector {
    * @param database0 the database0
    * @param _latency the _latency
    */
-  public Collector9iAndSEDB( ASHDatabase database0, final long _latency) {
+  public CollectorDB( ASHDatabase database0, final long _latency) {
     super();
     this.database = database0;
     this.m_latency = _latency;

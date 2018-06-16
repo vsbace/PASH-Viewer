@@ -110,12 +110,11 @@ public class CalendarH extends JPanel {
 		monthView.setSelectionMode(JXMonthView.MULTIPLE_SELECTION);
 		monthView.setFlaggedDates(getFraggedDays(startBDB,endBDB));
 		monthView.setFirstDisplayedDate(startBDB);
-	    monthView.setDayForeground(Calendar.SATURDAY, Color.RED);
+		monthView.setDayForeground(Calendar.SATURDAY, Color.RED);
 		monthView.setDayForeground(Calendar.SUNDAY, Color.RED);
 		monthView.setToolTipText(getCalendarTooltip(databaseHistory));
 				
-		monthView.addActionListener(
-				new ActionListenerMonthView(jButtonSelect,	jButtonDelete));
+		monthView.addActionListener(new ActionListenerMonthView(jButtonSelect, jButtonDelete));
 		
 		// Add calendar and buttons
 		subControlpanel.add(jButtonSelect);
@@ -147,7 +146,7 @@ public class CalendarH extends JPanel {
 
           long startTmp = getStartSelectionPlus0000();
           long endTmp = getEndSelectionPlus2659();
- 		  mainPreview.loadPreviewChartRun(startTmp,endTmp);
+	  mainPreview.loadPreviewChartRun(startTmp,endTmp);
          }
     }
 	
@@ -247,9 +246,9 @@ public class CalendarH extends JPanel {
 	 * @return the value
 	 */
 	long getStartSelectionPlus0000(){
-		    	 
-    	DateTime startDaySelect = new DateTime(getStartSelection());
-		
+
+    		DateTime startDaySelect = new DateTime(getStartSelection());
+
 		if (startDaySelect.getMillis() > getStartBDB()){
 			return startDaySelect.getMillis();
 		} else {
@@ -412,7 +411,6 @@ public class CalendarH extends JPanel {
 			this.setStartBDB((long)beginTmp);
 			this.setEndBDB((long)endTmp);
 		} catch (Exception e) {
-			System.out.println("Error on databaseHistory.getMaxMinTimePeriod(0/1) --- CalendarH");
 			noData = true;
 		}
 	}
@@ -444,8 +442,8 @@ public class CalendarH extends JPanel {
 			       	databaseHistory.getParameter("ASH.port") + "</I>" +
 			       	" <br>" +		
 				 "&nbsp;"+ 
-				     "SID: &nbsp;" + "<I>" + 
-				     databaseHistory.getParameter("ASH.sid")  + "</I>" +
+				     "Database: &nbsp;" + "<I>" + 
+				     databaseHistory.getParameter("ASH.db")  + "</I>" +
 				     " <br>" +		
 				 "&nbsp;"+ 
 				     "Username: &nbsp;" + "<I>" +
