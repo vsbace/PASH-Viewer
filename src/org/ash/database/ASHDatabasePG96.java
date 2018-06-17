@@ -49,12 +49,6 @@ import com.sleepycat.persist.EntityStore;
 
 // dcvetkov import
 import org.ash.util.Options;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 
 /**
  * The Class ASHDatabasePG9.
@@ -99,7 +93,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
             + "from pg_stat_activity "
             + "where state='active' and pid != pg_backend_pid()";
 
-    private String FILESEPARATOR = System.getProperty("file.separator");
+    private String fileSeparator = System.getProperty("file.separator");
+    private String planDir = Options.getInstance().getPlanDir();
 
     /**
      * The k for sample_id after reconnect
@@ -184,12 +179,16 @@ public class ASHDatabasePG96 extends ASHDatabase {
 
             if (model.getConnectionPool() != null) {
 
+		String connDBName = getParameter("ASH.db");
+
                 conn = this.model.getConnectionPool().getConnection();
 
                 statement = conn.prepareStatement(this.queryASH);
 
                 // set ArraySize for current statement to improve performance
                 statement.setFetchSize(5000);
+		// set Timeout to 1 second
+                statement.setQueryTimeout(1);
 
                 resultSetAsh = statement.executeQuery();
 
@@ -207,10 +206,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
 
                     Long sessionId = resultSetAsh.getLong("pid");
-                    // String sessionType = resultSetAsh.getString("backend_type");
-			String sessionType = "";
+		    String backendType = "";
 
-                    String ConnDBName = getParameter("ASH.db");
                     String databaseName = resultSetAsh.getString("datname");
 
                     Long userId = resultSetAsh.getLong("usesysid");
@@ -223,6 +220,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
                         if (program.equals("pg_basebackup")) {
                             query_text = "backup";
                         } else if (program.equals("walreceiver") || program.equals("walsender")) {
+                            query_text = "wal";
+                        } else if (backendType.equals("walreceiver") || backendType.equals("walsender")) {
                             query_text = "wal";
                         } else {
                             query_text = "empty";
@@ -291,7 +290,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
                                 .putNoReturn(new ActiveSessionHistory(
                                         activeSessionHistoryIdWait,
                                         valueSampleIdTimeLongWait,
-                                        sessionId, sessionType, userId, userName, sqlId, command_type,
+                                        sessionId, backendType, userId, userName, sqlId, command_type,
                                         event, waitClass, waitClassId, program, hostname));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -306,68 +305,11 @@ public class ASHDatabasePG96 extends ASHDatabase {
 
                     // dcvetkov: explain plan
                     if (command_type.equals("SELECT") || command_type.equals("UPDATE") || command_type.equals("DELETE") || command_type.equals("INSERT")) {
-
-                        String planFileName = Options.getInstance().getPlanDir() + FILESEPARATOR + sqlId + ".plan";
-                        String textFileName = Options.getInstance().getPlanDir() + FILESEPARATOR + sqlId + ".sql";
-                        File planFile = new File(planFileName);
-                        // если mtime файла старше часа - запрашиваем план заново
-                        if (System.currentTimeMillis() - planFile.lastModified() > 3600000) {
-
-                            String plan = "EXPLAIN PLAN FOR SQLID " + sqlId + " (" + command_type + "):\n"
-                                    + "------------------------------------------------------------\n\n";
-
-                            if (ConnDBName.equals(databaseName)) {
-
-                                ResultSet rs1 = null;
-                                PreparedStatement st1 = null;
-                                try {
-                                    st1 = conn.prepareStatement("EXPLAIN " + query_text);
-                                    rs1 = st1.executeQuery();
-                                } catch (Exception e) {
-                                    plan = plan + e.toString();
-                                }
-
-                                if (rs1 != null) {
-                                    while (rs1.next()) {
-                                        plan = plan + rs1.getString(1) + "\n";
-                                    }
-                                    rs1.close();
-                                }
-
-                                if (st1 != null) {
-                                    st1.close();
-                                }
-                            } else {
-                                plan = plan + "You are connected to database " + ConnDBName + " while query " + sqlId + " executed in database " + databaseName;
-                                plan = plan + ".\nSo sorry.";
-                            }
-
-                            if (ConnDBName.length() > 0) {
-                                Writer writer = null;
-                                try {
-                                    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(planFileName), "utf-8"));
-                                    writer.write(plan);
-                                } catch (IOException ex) {
-                                } finally {
-                                    try {
-                                        writer.close();
-                                    } catch (Exception ex) {/*ignore*/                                    }
-                                }
-
-                                writer = null;
-                                try {
-                                    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textFileName), "utf-8"));
-                                    writer.write(query_text);
-                                } catch (IOException ex) {
-                                } finally {
-                                    try {
-                                        writer.close();
-                                    } catch (Exception ex) {/*ignore*/
-                                    }
-                                }
-                            }
-                        }
+			if (connDBName.length() > 0) {
+			    DBUtils.explainPlan(sqlId, query_text, command_type, planDir, fileSeparator, connDBName, databaseName, conn);
+			}
                     }
+
                 }
                 if (conn != null) {
                     model.getConnectionPool().free(conn);
@@ -588,7 +530,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
      */
     private void loadDataToTempSqlSession(SqlsTemp tmpSqlsTemp,
             SessionsTemp tmpSessionsTemp, String sqlId, double waitClassId, Long sessionId,
-            String sessionidS, Double sessionSerial, String sessioniSerialS,
+            String sessionidS, Double sessionSerial, String backendType,
             Long useridL, String usernameSess, String programSess, boolean isDetail,
             String eventDetail, double sqlPlanHashValue) {
 
@@ -609,8 +551,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
         /**
          * Save data for session row
          */
-        tmpSessionsTemp.setSessionId(sessionidS, sessioniSerialS, programSess, "", usernameSess);
-        tmpSessionsTemp.setTimeOfGroupEvent(sessionidS + "_" + sessioniSerialS, waitClassId, count);
+        tmpSessionsTemp.setSessionId(sessionidS, backendType, programSess, "", usernameSess);
+        tmpSessionsTemp.setTimeOfGroupEvent(sessionidS, waitClassId, count);
 
         /**
          * Save event detail data for sql and sessions row
@@ -619,7 +561,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
             if (sqlId != null) {
                 tmpSqlsTemp.setTimeOfEventName(sqlId, waitClassId, eventDetail, count);
             }
-            tmpSessionsTemp.setTimeOfEventName(sessionidS + "_" + sessioniSerialS, waitClassId, eventDetail, count);
+            tmpSessionsTemp.setTimeOfEventName(sessionidS, waitClassId, eventDetail, count);
         }
     }
 

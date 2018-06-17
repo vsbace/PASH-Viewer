@@ -201,7 +201,7 @@ public class GanttDetailsH extends JPanel{
 			sqlIdHash = "SQL ID";
 			
 			String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type"}};
-			String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program"}};
+			String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program", "Backend Type"}};
 			
 			/** Array SqlIdText for SQL Text tab*/
 			Map<Integer,String> arraySqlIdText50SQLTextTab = new HashMap<Integer, String>();

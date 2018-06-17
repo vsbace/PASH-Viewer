@@ -309,9 +309,9 @@ public class Dictionary extends ListResourceBundle {
     {"_sqlPlanDetail.text","save to local DB"},
     
     {"scaleAutoRadioButton.text","Auto"},
-    {"scaleX1Button.text","1xCPU_COUNT"},
-    {"scaleX15Button.text","1.5xCPU_COUNT"},
-    {"scaleX2Button.text","2xCPU_COUNT"},
+    {"scaleX1Button.text","10 sessions"},
+    {"scaleX15Button.text","20 sessions"},
+    {"scaleX2Button.text","50 sessions"},
 
     // PostgreSQL Wait Types
     {"CPULabel.text","CPU"},

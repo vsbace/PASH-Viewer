@@ -671,7 +671,8 @@ public class ASHDatabase {
                 "Wait Class",
                 "Wait Class id",
                 "UserID",
-                "Hostname"
+                "Hostname",
+                "Backend Type"
         }, 0);
 
         try {
@@ -721,7 +722,8 @@ public class ASHDatabase {
                             ASH.getWaitClass(),
                             (long) ASH.getWaitClassId(),
                             ASH.getUserId(),
-                            ASH.getHostname()
+                            ASH.getHostname(),
+                            ASH.getBackendType()
                     });
                 }
                 ActiveSessionHistoryCursor.close();

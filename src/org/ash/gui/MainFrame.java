@@ -396,7 +396,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void setThresholdMaxCpu(){
 		Double valueSampleTime = 0.0;
 		// double maxCpu = Double.parseDouble(this.database.getParameter("cpu_count"));
-		double maxCpu = 4.0;
+		double maxCpu = 10.0;
 		this.stackedChartMainObject.setThresholdMaxCpu(maxCpu);
 		this.detailJPanel.setThresholdMaxCpu(maxCpu);
 	}

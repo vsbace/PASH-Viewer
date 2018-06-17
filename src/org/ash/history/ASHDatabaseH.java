@@ -430,7 +430,8 @@ public class ASHDatabaseH {
                 "Wait Class",
                 "Wait Class id",
                 "UserID",
-                "Hostname"
+                "Hostname",
+                "Backend Type"
         }, 0);
 
         try {
@@ -476,7 +477,8 @@ public class ASHDatabaseH {
                             ASH.getWaitClass(),
                             (long) ASH.getWaitClassId(),
                             ASH.getUserId(),
-                            ASH.getHostname()
+                            ASH.getHostname(),
+                            ASH.getBackendType()
                     });
                 }
                 ActiveSessionHistoryCursor.close();
@@ -580,6 +582,7 @@ public class ASHDatabaseH {
                     String usernameSess = ASH.getUserName();
                     String programSess = ASH.getProgram();
 			programSess = programSess + "@" + ASH.getHostname();
+                    String backendSess = ASH.getBackendType();
                     String waitClass = ASH.getWaitClass();
                     String eventName = ASH.getEvent();
 
@@ -588,13 +591,13 @@ public class ASHDatabaseH {
                         if (waitClass != null && waitClass.equalsIgnoreCase(eventFlag)) {
                             this.loadDataToTempSqlSession(tmpSqlsTemp, tmpSessionsTemp,
                                     sqlId, waitClassId, sessionId, sessionidS,
-                                    0.0, "", useridL, usernameSess, programSess,
+                                    0.0, backendSess, useridL, usernameSess, programSess,
                                     true, eventName, 0, ASH.getCommand_type());
                         }
                     } else {
                         this.loadDataToTempSqlSession(tmpSqlsTemp, tmpSessionsTemp,
-                                sqlId,  waitClassId, sessionId, sessionidS,
-                                0.0, "", useridL, usernameSess, programSess,
+                                sqlId, waitClassId, sessionId, sessionidS,
+                                0.0, backendSess, useridL, usernameSess, programSess,
                                 false, eventFlag, 0, ASH.getCommand_type());
                     }
                 }
@@ -677,7 +680,7 @@ public class ASHDatabaseH {
     private void loadDataToTempSqlSession(SqlsTemp tmpSqlsTemp, SessionsTemp tmpSessionsTemp,
                                           String sqlId,
                                           double waitClassId, Long sessionId, String sessionidS, Double sessionSerial,
-                                          String sessioniSerialS, Long useridL, String usernameSess, String programSess,
+                                          String backendType, Long useridL, String usernameSess, String programSess,
                                           boolean isDetail, String eventDetail, double sqlPlanHashValue, String sqlOpname) {
 
         int count = 1;
@@ -700,8 +703,8 @@ public class ASHDatabaseH {
         }
 
         /** Save data for session row */
-        tmpSessionsTemp.setSessionId(sessionidS, sessioniSerialS, programSess, "", usernameSess);
-        tmpSessionsTemp.setTimeOfGroupEvent(sessionidS + "_" + sessioniSerialS, waitClassId, count);
+        tmpSessionsTemp.setSessionId(sessionidS, backendType, programSess, "", usernameSess);
+        tmpSessionsTemp.setTimeOfGroupEvent(sessionidS, waitClassId, count);
 
         /** Save event detail data for sql and sessions row */
         if (isDetail) {
@@ -713,7 +716,7 @@ public class ASHDatabaseH {
                         count);
             }
             tmpSessionsTemp.setTimeOfEventName(
-                    sessionidS + "_" + sessioniSerialS,
+                    sessionidS,
                     waitClassId,
                     eventDetail,
                     count);

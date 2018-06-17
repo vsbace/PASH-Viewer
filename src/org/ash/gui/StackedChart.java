@@ -324,6 +324,7 @@ public class StackedChart {
         
         legend.setPosition(RectangleEdge.RIGHT);
         legend.setHorizontalAlignment(HorizontalAlignment.LEFT);
+	legend.setVerticalAlignment(VerticalAlignment.CENTER);
         
         chart.addSubtitle(legend);
         

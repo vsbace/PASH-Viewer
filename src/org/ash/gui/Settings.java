@@ -102,10 +102,6 @@ public class Settings extends JDialog {
 	private JRadioButton _30RadioButtonTopA = new JRadioButton();
 	private JRadioButton _50RadioButtonTopA = new JRadioButton();
 	
-	/** The checkbox for sql plans */
-	private JCheckBox sqlPlanCheckBoxTA = new JCheckBox();
-	private JCheckBox sqlPlanCheckBoxDetail = new JCheckBox();
-	
 	/** Button group for top sqls and sql plans */
 	private ButtonGroup buttonGrTopSqlsTopA = new ButtonGroup();
 	private ButtonGroup buttonGrTopSqlsPlanTopA = new ButtonGroup();
@@ -157,7 +153,7 @@ public class Settings extends JDialog {
 		super.setResizable(false);
 		this.InitializesJDialog();
 		super.pack();
-		this.setSize(250,420);
+		this.setSize(250,350);
 	    this.mainFrame = root0;
 	    
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -195,6 +191,7 @@ public class Settings extends JDialog {
 	 * 
 	 */
 	private void InitializesJDialog(){
+
 		/** The radio buttons for count of top sqls */
 		this._0RadioButtonTopA.setMnemonic(Options.getInstance().getResource("_0RadioButton.mnemonic").charAt(0));
 		this._0RadioButtonTopA.setText(Options.getInstance().getResource("_0RadioButton.text"));
@@ -213,14 +210,6 @@ public class Settings extends JDialog {
 		this._50RadioButtonTopA.setText(Options.getInstance().getResource("_50RadioButton.text"));
 		this._50RadioButtonTopA.addItemListener(new SelectItemListenerTopSqlRadioButtonTopA());
 		
-		this.sqlPlanCheckBoxTA.setText(Options.getInstance().getResource("_sqlPlanTA.text"));
-		this.sqlPlanCheckBoxTA.setSelected(false);
-		this.sqlPlanCheckBoxTA.addItemListener(new SelectItemListenerSqlPlanTA());
-		
-		this.sqlPlanCheckBoxDetail.setText(Options.getInstance().getResource("_sqlPlanDetail.text"));
-		this.sqlPlanCheckBoxDetail.setSelected(false);
-		this.sqlPlanCheckBoxDetail.addItemListener(new SelectItemListenerSqlPlanDetail());
-		
 		this.buttonGrTopSqlsTopA.add(_0RadioButtonTopA);
 		this.buttonGrTopSqlsTopA.add(_10RadioButtonTopA);
 		this.buttonGrTopSqlsTopA.add(_30RadioButtonTopA);
@@ -230,9 +219,9 @@ public class Settings extends JDialog {
 		this.sqlTextToClipboardCheckbox.setText(Options.getInstance().getResource("texttoclip.text"));
 		this.sqlTextToClipboardCheckbox.addItemListener(new SelectItemListenerTextToClipboard());
 
-        this.sqlMinimalistcCheckbox.setMnemonic(Options.getInstance().getResource("texttoclip.mnemonic").charAt(0));
-        this.sqlMinimalistcCheckbox.setText(Options.getInstance().getResource("minimalistic.text"));
-        this.sqlMinimalistcCheckbox.addItemListener(new SelectItemListenerMinimalistic());
+		this.sqlMinimalistcCheckbox.setMnemonic(Options.getInstance().getResource("texttoclip.mnemonic").charAt(0));
+		this.sqlMinimalistcCheckbox.setText(Options.getInstance().getResource("minimalistic.text"));
+		this.sqlMinimalistcCheckbox.addItemListener(new SelectItemListenerMinimalistic());
 		
 		this.autoRadioButton.setMnemonic(Options.getInstance().getResource("autoRadio.mnemonic").charAt(0));
 		this.autoRadioButton.setText(Options.getInstance().getResource("autoRadio.text"));
@@ -268,7 +257,6 @@ public class Settings extends JDialog {
 		this.buttonGrScaleTopA.add(scaleX15ButtonTopA);
 		this.buttonGrScaleTopA.add(scaleX2ButtonTopA);
 		
-		
 		/** The radio buttons for top sqls (detail) */
 		this._0RadioButtonDetail.setMnemonic(Options.getInstance().getResource("_0RadioButton.mnemonic").charAt(0));
 		this._0RadioButtonDetail.setText(Options.getInstance().getResource("_0RadioButton.text"));
@@ -291,8 +279,7 @@ public class Settings extends JDialog {
 		this.buttonGrTopSqlsDetail.add(_10RadioButtonDetail);
 		this.buttonGrTopSqlsDetail.add(_30RadioButtonDetail);
 		this.buttonGrTopSqlsDetail.add(_50RadioButtonDetail);
-		
-		
+				
 		this.scaleAutoRadioButtonDetail.setMnemonic(Options.getInstance().getResource("scaleAutoRadioButton.mnemonic").charAt(0));
 		this.scaleAutoRadioButtonDetail.setText(Options.getInstance().getResource("scaleAutoRadioButton.text"));
 		this.scaleAutoRadioButtonDetail.setSelected(true);
@@ -325,11 +312,11 @@ public class Settings extends JDialog {
 		mainPanelCommon.setLayout(gridBagLayoutCommon1);
 		
 		mainPanelTopA.setLayout(gridBagLayoutTopA1);
-	    okButtonTopA.setMnemonic(Options.getInstance().getResource("okbutton.mnemonic").charAt(0));
-	    okButtonTopA.setText(Options.getInstance().getResource("okbutton.text"));
-	    okButtonTopA.addActionListener(new OptionsDialog_okButton_actionAdapter(this));
-	    buttonsPanelTopA.setBorder(BorderFactory.createEtchedBorder());
-	    buttonsPanelTopA.add(okButtonTopA, null);
+		okButtonTopA.setMnemonic(Options.getInstance().getResource("okbutton.mnemonic").charAt(0));
+		okButtonTopA.setText(Options.getInstance().getResource("okbutton.text"));
+		okButtonTopA.addActionListener(new OptionsDialog_okButton_actionAdapter(this));
+		buttonsPanelTopA.setBorder(BorderFactory.createEtchedBorder());
+		buttonsPanelTopA.add(okButtonTopA, null);
 	    
 		mainPanelDetail.setLayout(gridBagLayoutDetail1);
 		okButtonDetail.setMnemonic(Options.getInstance().getResource("okbutton.mnemonic").charAt(0));
@@ -365,12 +352,14 @@ public class Settings extends JDialog {
                                TitledBorder.DEFAULT_POSITION,
                                topSqlSessSettPanelTopA);
         
-        topSqlPlanSettPanelTopA.setLayout(gridBagLayoutTopA2);
+//        topSqlPlanSettPanelTopA.setLayout(gridBagLayoutTopA2);
+/*
 	    titledSelectionModeTopA = BorderFactory.createTitledBorder(loweredetched, "SQL plan");
         addCompForTitledBorder(titledSelectionModeTopA,
                                TitledBorder.LEFT,
                                TitledBorder.DEFAULT_POSITION,
                                topSqlPlanSettPanelTopA);
+*/
 	    
         stackedSettPanelTopA.setLayout(gridBagLayoutTopA2);
 	    titledSelectionModeTopA = BorderFactory.createTitledBorder(loweredetched, "Top activity scale");
@@ -386,12 +375,14 @@ public class Settings extends JDialog {
                                TitledBorder.DEFAULT_POSITION,
                                topSqlSessSettPanelDetail);
         
-        topSqlPlanSettPanelDetail.setLayout(gridBagLayoutDetail2);
+//        topSqlPlanSettPanelDetail.setLayout(gridBagLayoutDetail2);
+/*
         titledSelectionModeDetail = BorderFactory.createTitledBorder(loweredetched, "SQL plan");
         addCompForTitledBorder(titledSelectionModeDetail,
                                TitledBorder.LEFT,
                                TitledBorder.DEFAULT_POSITION,
                                topSqlPlanSettPanelDetail);
+*/
 	    
         stackedSettPanelDetail.setLayout(gridBagLayoutDetail2);
         titledSelectionModeDetail = BorderFactory.createTitledBorder(loweredetched, "Top activity scale");
@@ -406,85 +397,41 @@ public class Settings extends JDialog {
         
 	    getContentPane().add(tabsSettings);
 	    
-	    mainPanelCommon.add(sqlTextToClipboardPanelCommon,  new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 260, 5), 0, 0));
-	    sqlTextToClipboardPanelCommon.add(sqlTextToClipboardCheckbox,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelCommon.add(sqlTextToClipboardPanelCommon,  new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    sqlTextToClipboardPanelCommon.add(sqlTextToClipboardCheckbox,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+            sqlTextToClipboardPanelCommon.add(sqlMinimalistcCheckbox,  new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    sqlTextToClipboardPanelCommon.add(new JPanel(),  new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 
-        sqlTextToClipboardPanelCommon.add(sqlMinimalistcCheckbox,  new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
-                ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelTopA.add(autoManualPanelTopA,   new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelTopA.add(topSqlSessSettPanelTopA,   new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelTopA.add(stackedSettPanelTopA,   new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 
-	    sqlTextToClipboardPanelCommon.add(new JPanel(),  new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelDetail.add(topSqlSessSettPanelDetail, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+	    mainPanelDetail.add(stackedSettPanelDetail,    new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 	    
-	    mainPanelTopA.add(autoManualPanelTopA,   new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    mainPanelTopA.add(topSqlSessSettPanelTopA,   new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    mainPanelTopA.add(topSqlPlanSettPanelTopA,   new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    mainPanelTopA.add(stackedSettPanelTopA,   new GridBagConstraints(0, 3, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    		  
-	    mainPanelDetail.add(topSqlSessSettPanelDetail, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    mainPanelDetail.add(topSqlPlanSettPanelDetail, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    mainPanelDetail.add(stackedSettPanelDetail,    new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
-	            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-	    
-	    autoManualPanelTopA.add(manualRadioButton,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    autoManualPanelTopA.add(autoRadioButton,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    autoManualPanelTopA.add(spinerRangeWindow,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    autoManualPanelTopA.add(manualRadioButton,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    autoManualPanelTopA.add(autoRadioButton,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    autoManualPanelTopA.add(spinerRangeWindow,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 	    		    
-	    topSqlSessSettPanelTopA.add(_0RadioButtonTopA,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelTopA.add(_10RadioButtonTopA,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelTopA.add(_30RadioButtonTopA,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelTopA.add(_50RadioButtonTopA,        new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelTopA.add(_0RadioButtonTopA,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelTopA.add(_10RadioButtonTopA,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelTopA.add(_30RadioButtonTopA,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelTopA.add(_50RadioButtonTopA,        new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 	   
-		topSqlPlanSettPanelTopA.add(sqlPlanCheckBoxTA,        new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-		topSqlPlanSettPanelTopA.add(Box.createRigidArea(new Dimension(80, 10)),        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelTopA.add(scaleAutoRadioButtonTopA,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelTopA.add(scaleX1ButtonTopA,        new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelTopA.add(scaleX15ButtonTopA,        new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelTopA.add(scaleX2ButtonTopA,        new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
 	    
-	    stackedSettPanelTopA.add(scaleAutoRadioButtonTopA,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelTopA.add(scaleX1ButtonTopA,        new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelTopA.add(scaleX15ButtonTopA,        new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelTopA.add(scaleX2ButtonTopA,        new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelDetail.add(_0RadioButtonDetail,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelDetail.add(_10RadioButtonDetail,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelDetail.add(_30RadioButtonDetail,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+	    topSqlSessSettPanelDetail.add(_50RadioButtonDetail,        new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 	    
-	    topSqlSessSettPanelDetail.add(_0RadioButtonDetail,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelDetail.add(_10RadioButtonDetail,        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelDetail.add(_30RadioButtonDetail,        new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlSessSettPanelDetail.add(_50RadioButtonDetail,        new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    
-	    topSqlPlanSettPanelDetail.add(sqlPlanCheckBoxDetail,        new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	    topSqlPlanSettPanelDetail.add(Box.createRigidArea(new Dimension(80, 10)),        new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-	   
-	    stackedSettPanelDetail.add(scaleAutoRadioButtonDetail,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelDetail.add(scaleX1ButtonDetail,        new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelDetail.add(scaleX15ButtonDetail,        new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
-	    stackedSettPanelDetail.add(scaleX2ButtonDetail,        new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
-	            ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelDetail.add(scaleAutoRadioButtonDetail,       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelDetail.add(scaleX1ButtonDetail,        new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0      ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelDetail.add(scaleX15ButtonDetail,        new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0     ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
+	    stackedSettPanelDetail.add(scaleX2ButtonDetail,        new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0      ,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(5, 5, 5, 5), 0, 0));
 		
 	}
 	
@@ -618,20 +565,15 @@ public class Settings extends JDialog {
 			if(e.getStateChange() == ItemEvent.SELECTED){
 				if (sel.getText().equals(Options.getInstance().getResource("_0RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextTopA(0);
-					sqlPlanCheckBoxTA.setSelected(false);
-					sqlPlanCheckBoxTA.setEnabled(false);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_10RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextTopA(10);
-					sqlPlanCheckBoxTA.setEnabled(true);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_30RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextTopA(30);
-					sqlPlanCheckBoxTA.setEnabled(true);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_50RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextTopA(50);
-					sqlPlanCheckBoxTA.setEnabled(true);
 				}
 			}
 		}
@@ -649,20 +591,15 @@ public class Settings extends JDialog {
 			if(e.getStateChange() == ItemEvent.SELECTED){
 				if (sel.getText().equals(Options.getInstance().getResource("_0RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextDetail(0);
-					sqlPlanCheckBoxDetail.setSelected(false);
-					sqlPlanCheckBoxDetail.setEnabled(false);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_10RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextDetail(10);
-					sqlPlanCheckBoxDetail.setEnabled(true);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_30RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextDetail(30);
-					sqlPlanCheckBoxDetail.setEnabled(true);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("_50RadioButton.text"))){
 					mainFrame.setTopSqlsSqlTextDetail(50);
-					sqlPlanCheckBoxDetail.setEnabled(true);
 				}
 			}
 		}
@@ -682,13 +619,13 @@ public class Settings extends JDialog {
 					mainFrame.setUpperBoundOfRangeAxisTopA(0.0);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("scaleX1Button.text"))){
-					mainFrame.setUpperBoundOfRangeAxisTopA(1.1);
+					mainFrame.setUpperBoundOfRangeAxisTopA(1.0);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("scaleX15Button.text"))){
-					mainFrame.setUpperBoundOfRangeAxisTopA(1.5);
+					mainFrame.setUpperBoundOfRangeAxisTopA(2.0);
 				}
 				else if (sel.getText().equals(Options.getInstance().getResource("scaleX2Button.text"))){
-					mainFrame.setUpperBoundOfRangeAxisTopA(2.0);
+					mainFrame.setUpperBoundOfRangeAxisTopA(5.0);
 				}
 			}
 		}

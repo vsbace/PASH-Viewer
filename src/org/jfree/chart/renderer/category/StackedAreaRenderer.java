@@ -250,7 +250,10 @@ public class StackedAreaRenderer extends AreaRenderer
         RectangleEdge edge1 = plot.getRangeAxisEdge();
 
         GeneralPath left = new GeneralPath();
-        GeneralPath right = new GeneralPath();
+        // GeneralPath right = new GeneralPath();
+	// dcvetkov, https://stackoverflow.com/questions/13137843/jfreechart-need-to-remove-vertical-white-lines-in-stackedareachart
+	GeneralPath right = left;
+
         if (y1 >= 0.0) {  // handle positive value
             transY1 = (float) rangeAxis.valueToJava2D(y1 + stack1[1], dataArea,
                     edge1);

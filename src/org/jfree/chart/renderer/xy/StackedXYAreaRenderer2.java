@@ -280,7 +280,9 @@ public class StackedXYAreaRenderer2 extends XYAreaRenderer2
         RectangleEdge edge1 = plot.getRangeAxisEdge();
 
         GeneralPath left = new GeneralPath();
-        GeneralPath right = new GeneralPath();
+	GeneralPath right = left;
+        // GeneralPath right = new GeneralPath();
+
         if (y1 >= 0.0) {  // handle positive value
             transY1 = (float) rangeAxis.valueToJava2D(y1 + stack1[1], dataArea,
                     edge1);

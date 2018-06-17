@@ -83,7 +83,7 @@ public class SessionsTemp {
     /**
      * The session serial#.
      */
-    private String SESSIONSERIAL = "SESSIONSERIAL";
+    private String BACKENDTYPE = "BACKENDTYPE";
 
     /**
      * The lwlock.
@@ -134,9 +134,9 @@ public class SessionsTemp {
      * @param user_id  the user_id
      * @param username the username
      */
-    public void setSessionId(String _sessionId, String _sessionSerial, String program,
+    public void setSessionId(String _sessionId, String _backendType, String program,
                              String user_id, String username) {
-        String sessionId = _sessionId + "_" + _sessionSerial;
+        String sessionId = _sessionId;
         if (!mainSessions.containsKey(sessionId)) {
             // Add SQL_ID, init storage for rows
             mainSessions.put(sessionId, new HashMap<String, Object>());
@@ -154,7 +154,7 @@ public class SessionsTemp {
             // Set SESSIONID
             mainSessions.get(sessionId).put(SESSIONID, _sessionId);
             // Set SESSIONSERIAL
-            mainSessions.get(sessionId).put(SESSIONSERIAL, _sessionSerial);
+            mainSessions.get(sessionId).put(BACKENDTYPE, _backendType);
             // Set USERNAME
             mainSessions.get(sessionId).put(USERNAME, username);
             // Set PROGRAM

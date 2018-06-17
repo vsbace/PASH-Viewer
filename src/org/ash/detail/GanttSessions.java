@@ -92,11 +92,12 @@ public class GanttSessions {
 		String USERNAME = "USERNAME";
 		String PROGRAM = "PROGRAM";
 		String SESSIONID  = "SESSIONID";
+		String BACKENDTYPE  = "BACKENDTYPE";
 		
 		int i = 0;
 		int sizeGanttTable = 100;
 		int sizeMainSqls = database.getSessionsTempDetail().getMainSessions().size();
-		Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][4];
+		Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][5];
 		
 		final GanttDrawingPartHelper partHelper = new GanttDrawingPartHelper();
 		
@@ -114,6 +115,7 @@ public class GanttSessions {
 			data[i][1] = me.getValue().get(SESSIONID);
 			data[i][2] = me.getValue().get(USERNAME);
 			data[i][3] = me.getValue().get(PROGRAM);
+			data[i][4] = me.getValue().get(BACKENDTYPE);
 			
 			/** Exit when rows > 100 */
 			if (i+1==Math.min(sizeGanttTable, sizeMainSqls)){

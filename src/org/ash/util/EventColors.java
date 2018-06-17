@@ -70,14 +70,16 @@ public class EventColors {
                 this.seriesNameColor.put("BackendRandomLock", new Color(11,244,6));
                 this.seriesNameColor.put("BackgroundWorkerLock", new Color(12,243,249));
                 this.seriesNameColor.put("BgWorkerStartup", new Color(13,242,7));
+                this.seriesNameColor.put("BgWorkerShutdown", new Color(113,142,7));
                 this.seriesNameColor.put("BgWriterHibernate", new Color(14,241,248));
                 this.seriesNameColor.put("BgWriterMain", new Color(15,240,8));
                 this.seriesNameColor.put("BtreePage", new Color(16,239,247));
                 this.seriesNameColor.put("BtreeVacuumLock", new Color(17,238,9));
                 this.seriesNameColor.put("buffer_content", new Color(18,237,246));
-                this.seriesNameColor.put("buffer_io", new Color(19,236,10));
+                this.seriesNameColor.put("buffer_io", new Color(19,136,10));
                 this.seriesNameColor.put("buffer_mapping", new Color(220,35,245));
                 this.seriesNameColor.put("BufFileWrite", new Color(22,233,244));
+                this.seriesNameColor.put("BufFileRead", new Color(22,233,44));
                 this.seriesNameColor.put("CheckpointerCommLock", new Color(23,232,12));
                 this.seriesNameColor.put("CheckpointerMain", new Color(24,231,243));
                 this.seriesNameColor.put("CheckpointLock", new Color(25,230,13));

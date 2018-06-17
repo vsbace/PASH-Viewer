@@ -273,7 +273,7 @@ public class GanttH extends JPanel {
             sqlIdHash = "SQL ID";
 
             String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type"}};
-            String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program"}};
+            String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program", "Backend Type"}};
 
             /** Array SqlIdText for SQL Text tab*/
             Map<Integer, String> arraySqlIdText50SQLTextTab = new HashMap<Integer, String>();
@@ -610,11 +610,12 @@ public class GanttH extends JPanel {
         String USERNAME = "USERNAME";
         String PROGRAM = "PROGRAM";
         String SESSIONID = "SESSIONID";
+        String BACKENDTYPE = "BACKENDTYPE";
 
         int i = 0;
         int sizeGanttTable = 100;
         int sizeMainSqls = database.getSessionsTemp().getMainSessions().size();
-        Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][4];
+        Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][5];
 
         final GanttDrawingPartHelper partHelper = new GanttDrawingPartHelper();
 
@@ -632,6 +633,7 @@ public class GanttH extends JPanel {
             data[i][1] = me.getValue().get(SESSIONID);
             data[i][2] = me.getValue().get(USERNAME);
             data[i][3] = me.getValue().get(PROGRAM);
+            data[i][4] = me.getValue().get(BACKENDTYPE);
 
             /** Exit when rows > 500 */
             if (i + 1 == Math.min(sizeGanttTable, sizeMainSqls)) {

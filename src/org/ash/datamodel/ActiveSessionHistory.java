@@ -48,7 +48,7 @@ class ActiveSessionHistory {
     long sessionId;
     
 	/** The session type. */
-	String backend_type;
+	String backendType;
 	
 	/** The user id. */
 	long userId;
@@ -72,14 +72,14 @@ class ActiveSessionHistory {
 	String program;
 	String hostname;
 
-	public ActiveSessionHistory(long activeSessionHistoryId, long sampleId, long sessionId, String sessionType, long userId, String userName, String sqlId, String command_type, String event, String waitClass, double waitClassId, String program, String hostname) {
+	public ActiveSessionHistory(long activeSessionHistoryId, long sampleId, long sessionId, String backendType, long userId, String userName, String sqlId, String command_type, String event, String waitClass, double waitClassId, String program, String hostname) {
 
 
 		this.activeSessionHistoryId = activeSessionHistoryId;
 		this.sampleId = sampleId;
 
 		this.sessionId = sessionId;
-		this.backend_type = sessionType;
+		this.backendType = backendType;
 		this.userId = userId;
 		this.userName = userName;
 		this.sqlId = sqlId;
@@ -128,8 +128,8 @@ class ActiveSessionHistory {
 	 * 
 	 * @return the session type
 	 */
-	public String getBackend_type() {
-		return backend_type;
+	public String getBackendType() {
+		return backendType;
 	}
 
 	/**
@@ -228,7 +228,7 @@ class ActiveSessionHistory {
 				+ "activeSessionHistoryId = " + this.activeSessionHistoryId + TAB
 				+ "sampleId = " + this.sampleId + TAB
 				+ "sessionId = " + this.sessionId + TAB
-				+ "backend_type = " + this.backend_type + TAB
+				+ "backendType = " + this.backendType + TAB
 				+ "userId = " + this.userId + TAB
 				+ "userName = " + this.userName + TAB
 				+ "sqlId = " + this.sqlId + TAB

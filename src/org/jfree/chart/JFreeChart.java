@@ -1260,7 +1260,7 @@ public class JFreeChart implements Drawable,
             y = frame.getY();
         }
         else if (vAlign == VerticalAlignment.CENTER) {
-            y = frame.getCenterY() - (dimensions.height / 2.0);
+            y = frame.getCenterY() - (dimensions.height / 2.0) - 20;
         }
         else if (vAlign == VerticalAlignment.BOTTOM) {
             y = frame.getMaxY() - dimensions.height;

@@ -243,7 +243,7 @@ public class Gantt extends JPanel {
 			String sqlIdHash = "SQL ID";
 
 			String[][] columnNamesSqls = { { "Activity %", sqlIdHash, "SQL Type" } };
-			String[][] columnNamesSessions = { { "Activity %", "PID", "User Name", "Program" } };
+			String[][] columnNamesSessions = { { "Activity %", "PID", "User Name", "Program", "Backend Type" } };
 
 			/** Array NofRow-sqlId for SQL Text tab*/
 			Map<Integer, String> arraySqlIdTSQLTextTab = new HashMap<Integer, String>();
@@ -574,11 +574,12 @@ public class Gantt extends JPanel {
 		String USERNAME = "USERNAME";
 		String PROGRAM = "PROGRAM";
 		String SESSIONID = "SESSIONID";
+		String BACKENDTYPE = "BACKENDTYPE";
 
 		int i = 0;
 		int sizeGanttTable = 100;
 		int sizeMainSqls = database.getSessionsTemp().getMainSessions().size();
-		Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][4];
+		Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][5];
 
 		final GanttDrawingPartHelper partHelper = new GanttDrawingPartHelper();
 
@@ -586,16 +587,15 @@ public class Gantt extends JPanel {
 		double sumOfRange = database.getSessionsTemp().get_sum();
 
 		// Desc sorting
-		HashMap<String, HashMap<String, Object>> sortedSessionMap = sortHashMapByValuesCOUNT(database
-				.getSessionsTemp().getMainSessions());
+		HashMap<String, HashMap<String, Object>> sortedSessionMap = sortHashMapByValuesCOUNT(database.getSessionsTemp().getMainSessions());
 
-		for (Entry<String, HashMap<String, Object>> me : sortedSessionMap
-				.entrySet()) {
+		for (Entry<String, HashMap<String, Object>> me : sortedSessionMap.entrySet()) {
 
 			data[i][0] = createDrawingState(partHelper, me, countOfSqls, sumOfRange);
 			data[i][1] = me.getValue().get(SESSIONID);
 			data[i][2] = me.getValue().get(USERNAME);
 			data[i][3] = me.getValue().get(PROGRAM);
+			data[i][4] = me.getValue().get(BACKENDTYPE);
 
 			/** Exit when rows > 500 */
 			if (i + 1 == Math.min(sizeGanttTable, sizeMainSqls)) {

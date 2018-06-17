@@ -27,6 +27,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.security.MessageDigest;
 import java.math.BigInteger;
+import org.ash.util.Options;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DBUtils {
 
@@ -229,5 +240,89 @@ public static String PlanHashValue(String plan) {
 
         return md5Hex;
     }
+
+
+
+    public static void explainPlan(String sqlId, String query_text, String command_type, String planDir, String fileSeparator, String connDBName, String databaseName, Connection conn) {
+
+                        String planFileName = planDir + fileSeparator + sqlId + ".plan";
+                        String textFileName = planDir + fileSeparator + sqlId + ".sql";
+                        File planFile = new File(planFileName);
+			String plan = "";
+			String planHashValue = "";
+
+                        // если mtime файла старше часа - запрашиваем план заново
+                        if (System.currentTimeMillis() - planFile.lastModified() > 3600000) {
+
+                            if (connDBName.equals(databaseName)) {
+
+                                ResultSet rs1 = null;
+                                PreparedStatement st1 = null;
+                                try {
+                                    st1 = conn.prepareStatement("EXPLAIN " + query_text);
+                                    st1.setQueryTimeout(1);
+                                    rs1 = st1.executeQuery();
+                                } catch (Exception e) {
+                                    plan = plan + e.toString();
+                                }
+
+                                if (rs1 != null) {
+				    try {
+                                    while (rs1.next()) {
+                                        plan = plan + rs1.getString(1) + "\n";
+                                    }
+				    } catch (SQLException e) { e.printStackTrace(); }
+
+				    try {
+                                    rs1.close();
+				    } catch (SQLException e) { e.printStackTrace(); }
+
+				    planHashValue = PlanHashValue(plan);
+
+				    plan = "PLAN " + planHashValue + " FOR SQLID " + sqlId + " (" + command_type + "):\n"
+                                    + "------------------------------------------------------------\n\n" + plan;
+                                }
+
+                                if (st1 != null) {
+				    try {
+                                    st1.close();
+				    } catch (SQLException e) { e.printStackTrace(); }
+                                }
+                            } else {
+                                plan = plan + "You are connected to database " + connDBName + " while query " + sqlId + " executed in database " + databaseName;
+                                plan = plan + ".\nSo sorry.";
+                            }
+
+                                Writer writer = null;
+                                try {
+                                    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(planFileName), "utf-8"));
+                                    writer.write(plan);
+                                } catch (IOException e) {
+				    e.printStackTrace();
+                                } finally {
+                                    try {
+                                        writer.close();
+                                    } catch (Exception e) {
+					e.printStackTrace();
+				    }
+                                }
+
+                                writer = null;
+                                try {
+                                    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(textFileName), "utf-8"));
+                                    writer.write(query_text);
+                                } catch (IOException e) {
+				    e.printStackTrace();
+                                } finally {
+                                    try {
+                                        writer.close();
+                                    } catch (Exception e) {
+					e.printStackTrace();
+				    }
+                                }
+                        }
+
+    }
+
 	
 }
