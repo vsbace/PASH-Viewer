@@ -50,5 +50,4 @@
 
    PASH Viewer URL
    ----------
-   https://sourceforge.net/projects/pash-viewer/
-   https://github.com/dbacvetkov/PASH-Viewer
+      https://github.com/dbacvetkov/PASH-Viewer
