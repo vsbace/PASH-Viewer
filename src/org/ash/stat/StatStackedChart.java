@@ -19,7 +19,7 @@
  * Copyright (c) 2009, Alex Kardapolov, All rights reserved.
  *
  */
-package org.ash.detail;
+package org.ash.stat;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -64,7 +64,7 @@ import com.sleepycat.je.DatabaseException;
 /**
  * The Class StackedXYAreaChartDetail.
  */
-public class StackedChartDetail {
+public class StatStackedChart {
 
 	/** The database. */
 	private ASHDatabase database;
@@ -128,7 +128,7 @@ public class StackedChartDetail {
 	 * 
 	 * @param database0 the database0
 	 */
-    public StackedChartDetail(ASHDatabase database0, String waitClass0) {
+    public StatStackedChart(ASHDatabase database0, String waitClass0) {
        this.database = database0;
        this.waitClass = waitClass0;
        
@@ -272,11 +272,14 @@ public class StackedChartDetail {
      * @param waitClass - wait class or CPU used
      */
     public void setTitle() {
+       
        if (this.waitClass.equalsIgnoreCase(CPU)){
-	        	chart.setTitle(this.activeSessionWorking + this.waitClass);
+        	chart.setTitle(this.activeSessionWorking
+        		+this.waitClass);
         	}
         	else {
-        		chart.setTitle(this.activeSessionWaiting + this.waitClass);
+        	chart.setTitle(this.activeSessionWaiting
+             	+this.waitClass);
         	}
     }
     
@@ -359,7 +362,8 @@ public class StackedChartDetail {
      */
     public void setSeriesPaint(int series, String waitClass, String from){
     	if (waitClass != null){
-    		this.renderer.setSeriesPaint(series, Options.getInstance().getColor(waitClass), true);
+    		this.renderer.setSeriesPaint(series, 
+    				Options.getInstance().getColor(waitClass), true);
     	}
     }
     

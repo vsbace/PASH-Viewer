@@ -56,6 +56,7 @@ import java.nio.file.*;
 import java.io.IOException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.ash.database.DBUtils;
 
 /**
  * The Class SqlsAndSessionsGantt.
@@ -196,7 +197,7 @@ public class GanttDetails extends JPanel{
 			
 			String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type"}};
 			String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program", "Backend Type"}};
-			
+
 			/** Array SqlIdText for SQL Text tab*/
 			Map<Integer, String> arraySqlIdText50SQLTextTab = new HashMap<Integer, String>();
 			
@@ -360,6 +361,8 @@ public class GanttDetails extends JPanel{
 					|| sqlType.equalsIgnoreCase("UPDATE")
 					|| sqlType.equalsIgnoreCase("DELETE")) {
 				tabbedpane.setEnabledAt(2, true);
+				SQLPLAN = DBUtils.readPlan(sqlId);
+				/*
 				try {
 					// dcvetkov - load plan from file
 					String FILESEPARATOR = System.getProperty("file.separator");
@@ -374,6 +377,8 @@ public class GanttDetails extends JPanel{
 				} catch (Exception e1) {
 					System.out.println("Exception occured: " + e1.getMessage());
 				}
+				*/
+
 			} else {
 				tabbedpane.setEnabledAt(2, false);
 			}

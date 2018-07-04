@@ -90,50 +90,25 @@ public class ConnectionDialog extends JDialog {
      */
     JPanel connPanel = new JPanel();
 
-    /**
-     * The username label.
-     */
     JLabel usernameLabel = new JLabel();
-
-    /**
-     * The username text field.
-     */
     JTextField usernameTF = new JTextField();
 
-    /**
-     * The password label.
-     */
     JLabel passwdLabel = new JLabel();
-
     JPasswordField passwdTF = new JPasswordField();
+
     JLabel hostLabel = new JLabel();
+    JTextField hostTF = new JTextField();
 
     JLabel DBLabel = new JLabel();
     JTextField DBTF = new JTextField();
 
-    /**
-     * The host field.
-     */
-    JTextField hostTF = new JTextField();
+    JLabel schemaLabel = new JLabel();
+    JTextField schemaTF = new JTextField();
 
-    /**
-     * The port label.
-     */
     JLabel portLabel = new JLabel();
-
-    /**
-     * The port field.
-     */
     JTextField portTF = new JTextField();
 
-    /**
-     * The name label.
-     */
     JLabel nameLabel = new JLabel();
-
-    /**
-     * The name field.
-     */
     JTextField nameTF = new JTextField();
 
     /**
@@ -262,6 +237,7 @@ public class ConnectionDialog extends JDialog {
         urlTF.setText(c.getUrl());
         classNameTF.setText(c.getClassName());
         DBTF.setText(c.getDB());
+        schemaTF.setText(c.getSchema());
         hostTF.setText(c.getHost());
         portTF.setText(c.getPort());
     }
@@ -295,6 +271,9 @@ public class ConnectionDialog extends JDialog {
         hostLabel.setText(Options.getInstance().getResource("host"));
         hostTF.setText("");
         hostTF.setColumns(20);
+        schemaLabel.setText("Schema");
+        schemaTF.setText("");
+        schemaTF.setColumns(20);
         portLabel.setText(Options.getInstance().getResource("port"));
         portTF.setText("5432");
         portTF.setColumns(5);
@@ -331,34 +310,20 @@ public class ConnectionDialog extends JDialog {
 
         connPanel.add("DEFAULT", defaultPanel);
 
-        defaultPanel.add(usernameLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(usernameTF, new GridBagConstraints(1, 1, 3, 1, 1.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(passwdLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(passwdTF, new GridBagConstraints(1, 2, 3, 1, 1.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(hostLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(hostTF, new GridBagConstraints(1, 4, 3, 1, 1.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-
-
-    defaultPanel.add(DBLabel,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-    defaultPanel.add(DBTF,    new GridBagConstraints(1, 3, 3, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-
-
-        defaultPanel.add(portLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(portTF, new GridBagConstraints(1, 5, 3, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(nameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        defaultPanel.add(nameTF, new GridBagConstraints(1, 0, 3, 1, 1.0, 0.0
-                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(usernameLabel,	new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(usernameTF,	new GridBagConstraints(1, 1, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(passwdLabel,	new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(passwdTF,	new GridBagConstraints(1, 2, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(DBLabel,	new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(DBTF,		new GridBagConstraints(1, 3, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(schemaLabel,	new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(schemaTF,	new GridBagConstraints(1, 4, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(hostLabel,	new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(hostTF,	new GridBagConstraints(1, 5, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(portLabel,	new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(portTF,	new GridBagConstraints(1, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(nameLabel,	new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+        defaultPanel.add(nameTF,	new GridBagConstraints(1, 0, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 
         cardLayout.show(connPanel, "DEFAULT");
     }
@@ -395,6 +360,7 @@ public class ConnectionDialog extends JDialog {
         c.setName(nameTF.getText());
         c.setUsername(usernameTF.getText());
         c.setPassword(passwdTF.getText());
+        c.setSchema(schemaTF.getText());
 
         String TempPort = portTF.getText();
 

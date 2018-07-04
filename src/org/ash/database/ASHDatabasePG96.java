@@ -89,7 +89,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
             + "coalesce(usename, 'unknown') as usename, "
             + "application_name, "
             + "coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname, "
-            + "wait_event_type, wait_event, query "
+            + "wait_event_type, wait_event, query, "
+            + "query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-query_start)) as duration "
             + "from pg_stat_activity "
             + "where state='active' and pid != pg_backend_pid()";
 
@@ -180,6 +181,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
             if (model.getConnectionPool() != null) {
 
 		String connDBName = getParameter("ASH.db");
+		int explainFreq = Options.getInstance().getExplainFreq();
 
                 conn = this.model.getConnectionPool().getConnection();
 
@@ -204,6 +206,10 @@ public class ASHDatabasePG96 extends ASHDatabase {
                     // Calculate sample time
                     java.sql.Timestamp PGDateSampleTime = resultSetAsh.getTimestamp("current_timestamp");
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
+
+                    java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
+                    Long queryStartLong = (new Long(queryStartTS.getTime()));
+                    Double duration = resultSetAsh.getDouble("duration");
 
                     Long sessionId = resultSetAsh.getLong("pid");
 		    String backendType = "";
@@ -291,7 +297,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
                                         activeSessionHistoryIdWait,
                                         valueSampleIdTimeLongWait,
                                         sessionId, backendType, userId, userName, sqlId, command_type,
-                                        event, waitClass, waitClassId, program, hostname));
+                                        event, waitClass, waitClassId, program, hostname, queryStartLong, duration));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -305,8 +311,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
 
                     // dcvetkov: explain plan
                     if (command_type.equals("SELECT") || command_type.equals("UPDATE") || command_type.equals("DELETE") || command_type.equals("INSERT")) {
-			if (connDBName.length() > 0) {
-			    DBUtils.explainPlan(sqlId, query_text, command_type, planDir, fileSeparator, connDBName, databaseName, conn);
+			if ((connDBName.length() > 0) && (explainFreq > 0)) {
+			    DBUtils.explainPlan(sqlId, query_text, command_type, planDir, fileSeparator, connDBName, databaseName, conn, explainFreq);
 			}
                     }
 
@@ -367,8 +373,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
 
             // get sample id's for beginTime and endTime
             EntityCursor<AshIdTime> ashSampleIds;
-            ashSampleIds = dao.doRangeQuery(dao.ashBySampleTime, beginTime
-                    - rangeHalf, true, endTime + rangeHalf, true);
+            ashSampleIds = dao.doRangeQuery(dao.ashBySampleTime, beginTime - rangeHalf, true, endTime + rangeHalf, true);
             /* Iterate on Ash by SampleTime. */
             Iterator<AshIdTime> ashIter = ashSampleIds.iterator();
 
@@ -378,12 +383,8 @@ public class ASHDatabasePG96 extends ASHDatabase {
 
                 // get rows from ActiveSessionHistory for samplId
                 EntityCursor<ActiveSessionHistory> ActiveSessionHistoryCursor;
-                ActiveSessionHistoryCursor = dao.doRangeQuery(
-                        dao.activeSessionHistoryByAshId, ashSumMain
-                                .getsampleId(), true, ashSumMain.getsampleId(),
-                        true);
-                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter = ActiveSessionHistoryCursor
-                        .iterator();
+                ActiveSessionHistoryCursor = dao.doRangeQuery(dao.activeSessionHistoryByAshId, ashSumMain.getsampleId(), true, ashSumMain.getsampleId(), true);
+                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter = ActiveSessionHistoryCursor.iterator();
 
                 while (ActiveSessionHistoryIter.hasNext()) {
                     ActiveSessionHistory ASH = ActiveSessionHistoryIter.next();
@@ -401,20 +402,23 @@ public class ASHDatabasePG96 extends ASHDatabase {
                     String waitClass = ASH.getWaitClass();
                     String eventName = ASH.getEvent();
 
+                    Long queryStart = ASH.getQueryStart();
+                    Double duration = ASH.getDuration();
+
                     // Exit when current eventClas != eventFlag
                     if (!eventFlag.equalsIgnoreCase("All")) {
                         if (waitClass != null && waitClass.equalsIgnoreCase(eventFlag)) {
                             this.loadDataToTempSqlSession(tmpSqlsTemp,
                                     tmpSessionsTemp, sqlId, waitClassId,
                                     sessionId, sessionidS, 0.0, "",
-                                    useridL, usernameSess, programSess, true, eventName, 0);
+                                    useridL, usernameSess, programSess, true, eventName, queryStart, duration);
                         }
 
                     } else {
                         this.loadDataToTempSqlSession(tmpSqlsTemp,
                                 tmpSessionsTemp, sqlId, waitClassId,
                                 sessionId, sessionidS, 0.0, "",
-                                useridL, usernameSess, programSess, false, eventFlag, 0);
+                                useridL, usernameSess, programSess, false, eventFlag, queryStart, duration);
                     }
                 }
                 // Close cursor!!
@@ -532,7 +536,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
             SessionsTemp tmpSessionsTemp, String sqlId, double waitClassId, Long sessionId,
             String sessionidS, Double sessionSerial, String backendType,
             Long useridL, String usernameSess, String programSess, boolean isDetail,
-            String eventDetail, double sqlPlanHashValue) {
+            String eventDetail, Long queryStart, Double duration) {
 
         int count = 1;
 
@@ -542,10 +546,9 @@ public class ASHDatabasePG96 extends ASHDatabase {
         if (sqlId != null) {
             // Save SQL_ID and init
             tmpSqlsTemp.setSqlId(sqlId);
-            // Save SqlPlanHashValue
-            tmpSqlsTemp.saveSqlPlanHashValue(sqlId, sqlPlanHashValue);
             // Save group event
             tmpSqlsTemp.setTimeOfGroupEvent(sqlId, waitClassId, count);
+	    tmpSqlsTemp.setSqlStats(sqlId, sessionId, queryStart, duration);
         }
 
         /**

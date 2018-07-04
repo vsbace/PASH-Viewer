@@ -213,29 +213,32 @@ public class MainFrame extends JFrame implements ActionListener{
 		/** Initialize progressBar*/
 		ProgressOnStart progressBarOnStart = new ProgressOnStart();
 		
-		/** Initialize connection pool to database */
+		/** Initialize connection pool to Oracle database */
 		this.initializeConnectionPool();
-			progressBarOnStart.setProgressValueAndTaskOutput(5,"Initialize connection pool");
+		progressBarOnStart.setProgressValueAndTaskOutput(5,"Connection pool initialized");
+
+		// dcvetkov
+		progressBarOnStart.taskOutput.append("Loading data from database...\n");
 
 		/** Initialize Berkeley DB, load (append) data to local database*/
 		this.initializeBerkeleyDatabaseAndLoading();
-			progressBarOnStart.setProgressValueAndTaskOutput(20, "Initialize local DB, load data");
+		progressBarOnStart.setProgressValueAndTaskOutput(20, "local DB initialized");
 		
 		/** Initialize Detail panel */
 		this.detailJPanel = new DetailPanels(this,this.database,this.statusBar);
 		this.detailJPanel.setVisible(false);
-			progressBarOnStart.setProgressValueAndTaskOutput(35,"Initialize detail tab");
+		progressBarOnStart.setProgressValueAndTaskOutput(35,"Detail tab initialized");
 		
 		/** Initialize History panel */
 		this.historyJPanel = new MainPanel(this,this.statusBar);
 		this.historyJPanel.setVisible(false);
-		progressBarOnStart.setProgressValueAndTaskOutput(40,"Initialize history tab");
+		progressBarOnStart.setProgressValueAndTaskOutput(40,"History tab initialized");
 
 		/** Initialize main Top Activity chart panel */
 		this.stackedChartMainObject = new StackedChart(this.database);
 		this.setThresholdMaxCpu();
 		this.chartChartPanel = this.stackedChartMainObject.createChartPanel();
-		progressBarOnStart.setProgressValueAndTaskOutput(60,"Initialize Top Activity tab");
+		progressBarOnStart.setProgressValueAndTaskOutput(60,"Top Activity tab initialized");
 			
 		/** Initialize Sqls & Sessions JPanel*/
 		this.sqlsAndSessions = new Gantt(this, this.database);
@@ -249,7 +252,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		this.splitPaneMain.add(this.sqlsAndSessions, "bottom");
 		this.splitPaneMain.setDividerLocation(290);
 		this.splitPaneMain.setOneTouchExpandable(true);
-			progressBarOnStart.setProgressValueAndTaskOutput(80,"Initialize Top SQL and Top Sessions");
+		progressBarOnStart.setProgressValueAndTaskOutput(80,"Top SQL and Top Sessions initialized");
 
 		/** Add sqlsAndSessions and statusBar to Top Activity chart panel listener */
 		this.chartChartPanel.addListenerReleaseMouse(this.sqlsAndSessions);
@@ -262,7 +265,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		/** Load data to detail data sets */
 		this.detailJPanel.loadDataToDataSet();	
 		this.collectorUI.addListenerStart(this.detailJPanel);
-			progressBarOnStart.setProgressValueAndTaskOutput(90, "Load data to detail data set");
+		progressBarOnStart.setProgressValueAndTaskOutput(90, "Detail data set loaded");
 	
 			
 		/** Add Main, Detail, History tabs */
@@ -435,22 +438,21 @@ public class MainFrame extends JFrame implements ActionListener{
 				+ ":" + dbConnUtil.getDbConnection().getPort()
 				+ "/" + dbConnUtil.getDbConnection().getDB();
 
+		Options.getInstance().setSchema(dbConnUtil.getDbConnection().getSchema());
+
 		/** init connection pool */
 		model.connectionPoolInit("org.postgresql.Driver", connParam, dbConnUtil.getDbConnection().getUsername(), dbConnUtil.getDbConnection().getPassword());		
 
 		/** check errors */
 		if (model.getErrorMessage() != null) {
-			JOptionPane.showMessageDialog(this, model.getErrorMessage(),
-					"Sql error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, model.getErrorMessage(), "Sql error", JOptionPane.ERROR_MESSAGE);
 			model.setErrorMessageNull();
 			model = null;
 			System.exit(0);
 		}
 
-		Options.getInstance().setNameOfConnection(
-				dbConnUtil.getDbConnection().getName());
-		Options.getInstance().setVersionDb(
-				model.getVersionDB());
+		Options.getInstance().setNameOfConnection(dbConnUtil.getDbConnection().getName());
+		Options.getInstance().setVersionDb(model.getVersionDB());
 	}
 
 	/**

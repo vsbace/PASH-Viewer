@@ -23,6 +23,7 @@ package org.ash.conn.model;
 
 import java.sql.*;
 import java.util.*;
+import org.ash.util.Options;
 
 /**
  * The Class ConnectionPool.
@@ -86,8 +87,7 @@ public class ConnectionPool implements Runnable{
 	public synchronized Connection getConnection() throws SQLException {
 		if (!availableConnections.isEmpty()) {
 
-			Connection existingConnection = (Connection) availableConnections
-					.lastElement();
+			Connection existingConnection = (Connection) availableConnections.lastElement();
 			int lastIndex = availableConnections.size() - 1;
 			availableConnections.removeElementAt(lastIndex);
 			// If connection on available list is closed (e.g.,
@@ -183,6 +183,41 @@ public class ConnectionPool implements Runnable{
 			Class.forName(driver);
 			// Establish network connection to database
 			Connection connection = DriverManager.getConnection(url, username, password);
+
+			// dcvetkov
+			// set search path for explaining plans
+			String schema = Options.getInstance().getSchema();
+			if(schema != null && !schema.equals(""))
+			{
+				Statement st = connection.createStatement();
+				try {
+					int rs = st.executeUpdate("set search_path TO " + schema + ",\"$user\", public;");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				/*
+				try {
+				        ResultSet rs = null;
+					rs = st.executeQuery("show search_path;");
+					while (rs.next()) {
+						String search_path = rs.getString("search_path");
+						System.out.println("--- search_path = " + search_path);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				*/
+
+				if (st != null) {
+					try {
+						st.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
 			return (connection);
 			
 		} catch (ClassNotFoundException cnfe) {

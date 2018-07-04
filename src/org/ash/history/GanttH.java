@@ -63,6 +63,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
 import org.syntax.jedit.tokenmarker.CTokenMarker;
+import org.ash.database.DBUtils;
 
 
 /**
@@ -272,7 +273,7 @@ public class GanttH extends JPanel {
             String sqlIdHash = "";
             sqlIdHash = "SQL ID";
 
-            String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type"}};
+            String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type", "Calls", "AVG Duration (ms)"}};
             String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program", "Backend Type"}};
 
             /** Array SqlIdText for SQL Text tab*/
@@ -438,6 +439,9 @@ public class GanttH extends JPanel {
 				|| sqlType.equalsIgnoreCase("UPDATE")
 				|| sqlType.equalsIgnoreCase("DELETE")) {
 			tabbedpane.setEnabledAt(2, true);
+				SQLPLAN = DBUtils.readPlan(sqlId);
+				/*
+
 			try {
 				// dcvetkov - load plan from file
 				String FILESEPARATOR = System.getProperty("file.separator");
@@ -452,6 +456,7 @@ public class GanttH extends JPanel {
 			} catch (Exception e1) {
 				System.out.println("Exception occured: " + e1.getMessage());
 			}
+				*/
 		} else {
 			tabbedpane.setEnabledAt(2, false);
 		}
@@ -527,7 +532,7 @@ public class GanttH extends JPanel {
         int sizeGanttTable = 100;
         int sizeMainSqls = database.getSqlsTemp().getMainSqls().size();
         StringBuilder clipBoardContent = new StringBuilder();
-        Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][3];
+        Object[][] data = new Object[Math.min(sizeGanttTable, sizeMainSqls)][5];
 
         final GanttDrawingPartHelper partHelper = new GanttDrawingPartHelper();
 
@@ -535,23 +540,35 @@ public class GanttH extends JPanel {
         double sumOfRange = database.getSqlsTemp().get_sum();
 
         // Desc sorting
-        HashMap<String, HashMap<String, Object>> sortedSessionMap =
-                sortHashMapByValuesCOUNT(database.getSqlsTemp().getMainSqls());
+        HashMap<String, HashMap<String, Object>> sortedSessionMap = sortHashMapByValuesCOUNT(database.getSqlsTemp().getMainSqls());
+	HashMap<String, HashMap<String, Double>> sqlStats = database.getSqlsTemp().getSqlStats();
 
         Map<String, String> arraySqlIdType50 = new HashMap<String, String>();
         Map<String, String> arraySqlIdText50 = new HashMap<String, String>();
 
         for (Entry<String, HashMap<String, Object>> me : sortedSessionMap.entrySet()) {
 
-            data[i][0] = createDrawingState(partHelper,
-                    me, countOfSqls, sumOfRange);
+		HashMap<String, Double> sqlStatsSQLID = sqlStats.get(me.getKey());
+		Double sumDuration = 0.0;
+		Long callCount = 0L;
+		Double avgDuration = -1.0;
+		for (Entry<String, Double> me2: sqlStatsSQLID.entrySet())
+		{
+			sumDuration += me2.getValue();
+			callCount++;
+		}
+		if(callCount > 0) avgDuration = sumDuration/callCount;
 
+
+            data[i][0] = createDrawingState(partHelper, me, countOfSqls, sumOfRange);
             data[i][1] = me.getKey();
             //data[i][2] = UNKNOWN;
             // double value = Double.parseDouble((String) me.getValue().get(SQL_TYPE));
             double value = 0.0;
-            data[i][2] = Options.getInstance().getResource(
-                    Options.getInstance().getResource(String.valueOf((int) value)));
+            data[i][2] = Options.getInstance().getResource(Options.getInstance().getResource(String.valueOf((int) value)));
+            data[i][3] = callCount;
+            data[i][4] = round(avgDuration,3);
+
 
             /** Load sqlid */
             arraySqlIdType50.put(me.getKey(),

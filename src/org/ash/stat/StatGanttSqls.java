@@ -1,6 +1,6 @@
 /*
  *-------------------
- * The GanttSqls.java is part of ASH Viewer
+ * The StatGanttSqls.java is part of ASH Viewer
  *-------------------
  * 
  * ASH Viewer is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  * Copyright (c) 2009, Alex Kardapolov, All rights reserved.
  *
  */
-package org.ash.detail;
+package org.ash.stat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +40,7 @@ import ext.egantt.model.drawing.state.BasicDrawingState;
 import ext.egantt.drawing.module.BasicPainterModule;
 import ext.egantt.swing.GanttDrawingPartHelper;
 
-public class GanttSqls {
+public class StatGanttSqls {
 
 	/** The database. */
 	private ASHDatabase database;
@@ -81,7 +81,7 @@ public class GanttSqls {
 	 *
 	 * @param database0 the database0
 	 */
-	public GanttSqls(ASHDatabase database0){
+	public StatGanttSqls(ASHDatabase database0){
 		this.database = database0;
 	}
 	
@@ -114,13 +114,16 @@ public class GanttSqls {
 		double sumOfRange = database.getSqlsTempDetail().get_sum();
 		
 		// Desc sorting
-		HashMap<String, HashMap<String, Object>> sortedSessionMap = Utils.sortHashMapByValues(database.getSqlsTempDetail().getMainSqls(),COUNT);
+		HashMap<String, HashMap<String, Object>> sortedSessionMap =
+			Utils.sortHashMapByValues(database.getSqlsTempDetail().getMainSqls(),COUNT);
 		
 		List<String> arraySqlId = new ArrayList<String>();
 		
 		for (Entry<String, HashMap<String, Object>> me : sortedSessionMap.entrySet()) {	
-
-			data[i][0] = createDrawingState(partHelper, me,countOfSqls,sumOfRange);
+			
+			data[i][0] = createDrawingState(partHelper,
+					me,countOfSqls,sumOfRange);
+			
 			data[i][1] = me.getKey();
 			data[i][2] = UNKNOWN;
 			
@@ -146,13 +149,15 @@ public class GanttSqls {
 		
 		/** Load CommandType, SqlText to gantt*/
 		ii = 0;
-		for (Entry<String, HashMap<String, Object>> me : sortedSessionMap.entrySet()) {
+		for (Entry<String, HashMap<String, Object>> me : sortedSessionMap
+				.entrySet()) {
 			String sqlId = me.getKey();
 			String sqlText = database.getSqlText(sqlId);
 			String sqlType = database.getSqlType(sqlId);
 
 			data[ii][1] = createDrawingStateSqlId(partHelper, sqlId, sqlText);
-			if (!sqlType.equals("")) data[ii][2] = sqlType;
+			if (!sqlType.equals(""))
+				data[ii][2] = sqlType;
 
 			// Save clipboard content 
 			clipBoardContent.append(sqlId + ":::" + sqlText + "\n");
@@ -387,4 +392,5 @@ public class GanttSqls {
 	public void setSelectSqlPlan(boolean isSelectSqlPlan) {
 		this.isSelectSqlPlan = isSelectSqlPlan;
 	}
+
 }

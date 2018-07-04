@@ -421,15 +421,15 @@ public class ASHDatabaseH {
         DefaultTableModel model = new DefaultTableModel(new String[]{
                 "SampleID",
                 "SampleTime",
-                "SessionID",
+                "PID",
+                "UserID",
                 "Username",
                 "Program",
                 "Sql type",
                 "SQL ID",
+                "Duration",
                 "Event",
                 "Wait Class",
-                "Wait Class id",
-                "UserID",
                 "Hostname",
                 "Backend Type"
         }, 0);
@@ -453,10 +453,8 @@ public class ASHDatabaseH {
                 String reportDateStr = df.format(td);
 
                 /* Do a filter on ActiveSessionHistory by SampleID (detail). */
-                EntityCursor<ActiveSessionHistory> ActiveSessionHistoryCursor =
-                        dao.getActiveSessionHistoryByAshId().subIndex(ashIdTimeMain.getsampleId()).entities();
-                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter =
-                        ActiveSessionHistoryCursor.iterator();
+                EntityCursor<ActiveSessionHistory> ActiveSessionHistoryCursor = dao.getActiveSessionHistoryByAshId().subIndex(ashIdTimeMain.getsampleId()).entities();
+                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter = ActiveSessionHistoryCursor.iterator();
 
                 // Iterate over ActiveSessionHistory (detail)
                 while (ActiveSessionHistoryIter.hasNext()) {
@@ -469,14 +467,14 @@ public class ASHDatabaseH {
                             ASH.getSampleId(),
                             reportDateStr,
                             ASH.getSessionId(),
+                            ASH.getUserId(),
                             ASH.getUserName(),
                             ASH.getProgram(),
                             ASH.getCommand_type(),
                             ASH.getSqlId(),
+                            ASH.getDuration(),
                             ASH.getEvent(),
                             ASH.getWaitClass(),
-                            (long) ASH.getWaitClassId(),
-                            ASH.getUserId(),
                             ASH.getHostname(),
                             ASH.getBackendType()
                     });
@@ -581,10 +579,13 @@ public class ASHDatabaseH {
                     Long useridL = ASH.getUserId();
                     String usernameSess = ASH.getUserName();
                     String programSess = ASH.getProgram();
-			programSess = programSess + "@" + ASH.getHostname();
+                    programSess = programSess + "@" + ASH.getHostname();
                     String backendSess = ASH.getBackendType();
                     String waitClass = ASH.getWaitClass();
                     String eventName = ASH.getEvent();
+
+                    Long queryStart = ASH.getQueryStart();
+                    Double duration = ASH.getDuration();
 
                     // Exit when current eventClas != eventFlag
                     if (!eventFlag.equalsIgnoreCase("All")) {
@@ -592,13 +593,13 @@ public class ASHDatabaseH {
                             this.loadDataToTempSqlSession(tmpSqlsTemp, tmpSessionsTemp,
                                     sqlId, waitClassId, sessionId, sessionidS,
                                     0.0, backendSess, useridL, usernameSess, programSess,
-                                    true, eventName, 0, ASH.getCommand_type());
+                                    true, eventName, queryStart, duration);
                         }
                     } else {
                         this.loadDataToTempSqlSession(tmpSqlsTemp, tmpSessionsTemp,
                                 sqlId, waitClassId, sessionId, sessionidS,
                                 0.0, backendSess, useridL, usernameSess, programSess,
-                                false, eventFlag, 0, ASH.getCommand_type());
+                                false, eventFlag, queryStart, duration);
                     }
                 }
                 // Close cursor!!
@@ -681,7 +682,7 @@ public class ASHDatabaseH {
                                           String sqlId,
                                           double waitClassId, Long sessionId, String sessionidS, Double sessionSerial,
                                           String backendType, Long useridL, String usernameSess, String programSess,
-                                          boolean isDetail, String eventDetail, double sqlPlanHashValue, String sqlOpname) {
+                                          boolean isDetail, String eventDetail, Long queryStart, Double duration) {
 
         int count = 1;
 
@@ -689,17 +690,9 @@ public class ASHDatabaseH {
         if (sqlId != null && !sqlId.equalsIgnoreCase("0")) {
             // Save SQL_ID and init
             tmpSqlsTemp.setSqlId(sqlId);
-
-            // Save SqlPlanHashValue
-            tmpSqlsTemp.saveSqlPlanHashValue(sqlId, sqlPlanHashValue);
-
             // Save group event
-            tmpSqlsTemp.setTimeOfGroupEvent(
-                    sqlId,
-                    waitClassId,
-                    count);
-
-            tmpSqlsTemp.putSqlType(sqlId, sqlOpname);
+            tmpSqlsTemp.setTimeOfGroupEvent(sqlId, waitClassId, count);
+	    tmpSqlsTemp.setSqlStats(sqlId, sessionId, queryStart, duration);
         }
 
         /** Save data for session row */

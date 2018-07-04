@@ -32,7 +32,7 @@
 
   Running PASH Viewer
   ----------------
-  1) Unpack the archive, eg: 
+  1) Unpack the archive, eg:
       unzip PASH-Viewer-0.3.zip
 
   2) A directory called "PASH-Viewer-0.3" will be created.
@@ -50,4 +50,4 @@
 
    PASH Viewer URL
    ----------
-      https://github.com/dbacvetkov/PASH-Viewer
+   https://github.com/dbacvetkov/PASH-Viewer

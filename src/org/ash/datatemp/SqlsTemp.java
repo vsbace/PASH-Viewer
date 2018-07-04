@@ -37,6 +37,7 @@ public class SqlsTemp {
      * The main sqls.
      */
     private HashMap<String, HashMap<String, Object>> mainSqls;
+    private HashMap<String, HashMap<String, Double>> sqlStats;
 
     /**
      * The SQL_TEXT.
@@ -184,6 +185,7 @@ public class SqlsTemp {
      */
     public SqlsTemp() {
         mainSqls = new HashMap<String, HashMap<String, Object>>();
+	sqlStats = new HashMap<String, HashMap<String, Double>>();
     }
 
     /**
@@ -209,50 +211,28 @@ public class SqlsTemp {
             // Set count to 0
             mainSqls.get(sqlId).put(COUNT, 0.0);
             // Set SQL_TYPE to UNKNOWN
-            mainSqls.get(sqlId).put(SQL_TYPE,
-                    Options.getInstance().getResource(
-                            Options.getInstance().getResource("0")));
+            mainSqls.get(sqlId).put(SQL_TYPE, Options.getInstance().getResource(Options.getInstance().getResource("0")));
             // Initialize list for sqlid
             sqlHashValueHashMap.put(sqlId, new ArrayList<Double>());
         }
-    }
 
-    /**
-     * Add sqlPlanHashValue to temporary variable.
-     *
-     * @param sqlId
-     * @param sqlPlanHashValue
-     */
-    public void saveSqlPlanHashValue(String sqlId, double sqlPlanHashValue) {
-        //System.out.println("Add to temp object1 "+sqlId+"  "+sqlPlanHashValue);
-        List<Double> list = sqlHashValueHashMap.get(sqlId);
-        Iterator<Double> listIter = list.iterator();
-        boolean isExist = false;
-        while (listIter.hasNext()) {
-            if (listIter.next() == sqlPlanHashValue) {
-                isExist = true;
-            }
-        }
-        if (!isExist && sqlPlanHashValue != 0.0) {
-            list.add(sqlPlanHashValue);
-            //System.out.println("Add to temp object2 "+sqlId+"  "+sqlPlanHashValue);
-        }
-    }
-
-    /**
-     * Get sql hash value by sql id
-     *
-     * @param sqlId
-     * @return
-     */
-    public List<Double> getSqlPlanHashValue(String sqlId) {
-        List<Double> list = sqlHashValueHashMap.get(sqlId);
-        return list;
+        if (!sqlStats.containsKey(sqlId)) {
+            sqlStats.put(sqlId, new HashMap<String, Double>());
+	}
     }
 
     public void putSqlType(String sqlId, String sqlType) {
         mainSqls.get(sqlId).put(SQL_TYPE, sqlType);
     }
+
+
+    public void setSqlStats(
+            String sqlId,
+	    long sessionId,
+            long queryStart,
+            Double duration) {
+	    sqlStats.get(sqlId).put(sessionId + "_" + queryStart, duration);
+	}
 
     /**
      * Sets the time of group event.
@@ -366,6 +346,7 @@ public class SqlsTemp {
      */
     public void clear() {
         mainSqls.clear();
+	sqlStats.clear();
         eventList.clear();
         sqlHashValueHashMap.clear();
 
@@ -389,6 +370,10 @@ public class SqlsTemp {
      */
     public HashMap<String, HashMap<String, Object>> getMainSqls() {
         return mainSqls;
+    }
+
+    public HashMap<String, HashMap<String, Double>> getSqlStats() {
+        return sqlStats;
     }
 
     /**

@@ -37,7 +37,7 @@ public class ProgressOnStart extends Canvas {
 
 		private Window window;
 		private JProgressBar progressBar;
-	    private JTextArea taskOutput;
+	    public JTextArea taskOutput;
 	    private int progress = 0;
 	    
 	    /**

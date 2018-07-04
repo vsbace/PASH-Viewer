@@ -74,14 +74,12 @@ public class Model {
 			this.driver = driver;
 			this.url = url;
 			this.username = username;
-			this.password = password; 
+			this.password = password;
 			try {
-				connectionPool = new ConnectionPool(driver, url, username,
-						password, 2, 20, true);
+				connectionPool = new ConnectionPool(driver, url, username, password, 2, 20, true);
 				setVersion();
 			} catch (SQLException e) {
-				System.out.println("SQL Exception occured " +
-						"while connection pool initialize: "+e.getMessage());
+				System.out.println("SQL Exception occured while connection pool initialize: " + e.getMessage());
 				errorMessage = e.toString();
 				connectionPool = null;
 			}

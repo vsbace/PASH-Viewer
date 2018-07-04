@@ -662,15 +662,15 @@ public class ASHDatabase {
         DefaultTableModel model = new DefaultTableModel(new String[]{
                 "SampleID",
                 "SampleTime",
-                "SessionID",
+                "PID",
+                "UserID",
                 "Username",
                 "Program",
                 "Sql type",
                 "SQL ID",
+                "Duration",
                 "Event",
                 "Wait Class",
-                "Wait Class id",
-                "UserID",
                 "Hostname",
                 "Backend Type"
         }, 0);
@@ -694,10 +694,8 @@ public class ASHDatabase {
                 String reportDateStr = df.format(td);
 
                 /* Do a filter on ActiveSessionHistory by SampleID (detail). */
-                EntityCursor<ActiveSessionHistory> ActiveSessionHistoryCursor =
-                        dao.getActiveSessionHistoryByAshId().subIndex(ashIdTimeMain.getsampleId()).entities();
-                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter =
-                        ActiveSessionHistoryCursor.iterator();
+                EntityCursor<ActiveSessionHistory> ActiveSessionHistoryCursor = dao.getActiveSessionHistoryByAshId().subIndex(ashIdTimeMain.getsampleId()).entities();
+                Iterator<ActiveSessionHistory> ActiveSessionHistoryIter = ActiveSessionHistoryCursor.iterator();
 
                 // Iterate over ActiveSessionHistory (detail)
                 while (ActiveSessionHistoryIter.hasNext()) {
@@ -714,14 +712,14 @@ public class ASHDatabase {
                             ASH.getSampleId(),
                             reportDateStr,
                             ASH.getSessionId(),
+                            ASH.getUserId(),
                             ASH.getUserName(),
                             ASH.getProgram(),
                             ASH.getCommand_type(),
                             ASH.getSqlId(),
+                            ASH.getDuration(),
                             ASH.getEvent(),
                             ASH.getWaitClass(),
-                            (long) ASH.getWaitClassId(),
-                            ASH.getUserId(),
                             ASH.getHostname(),
                             ASH.getBackendType()
                     });

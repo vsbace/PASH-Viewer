@@ -84,7 +84,7 @@ public class EventColors {
                 this.seriesNameColor.put("CheckpointerMain", new Color(24,231,243));
                 this.seriesNameColor.put("CheckpointLock", new Color(25,230,13));
                 this.seriesNameColor.put("ClientRead", new Color(159,147,113));
-                this.seriesNameColor.put("ClientWrite", new Color(27,228,14));
+                this.seriesNameColor.put("ClientWrite", new Color(161,61,61));
                 this.seriesNameColor.put("clog", new Color(28,227,241));
                 this.seriesNameColor.put("CLogControlLock", new Color(29,226,15));
                 this.seriesNameColor.put("ClogGroupUpdate", new Color(129,126,15));

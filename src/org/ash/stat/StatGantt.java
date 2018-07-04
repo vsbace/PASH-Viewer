@@ -1,6 +1,6 @@
 /*
  *-------------------
- * The GanttDetailsH.java is part of ASH Viewer
+ * The StatGantt.java is part of ASH Viewer
  *-------------------
  * 
  * ASH Viewer is free software: you can redistribute it and/or modify
@@ -19,38 +19,8 @@
  * Copyright (c) 2009, Alex Kardapolov, All rights reserved.
  *
  */
-package org.ash.history.detail;
+package org.ash.stat;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.ash.history.detail.GanttSessions;
-import org.ash.history.detail.GanttSqls;
-import org.ash.database.ASHDatabase;
-import org.ash.gui.GanttSplitPane;
-import org.ash.history.ASHDatabaseH;
-import org.ash.util.Options;
-import org.ash.util.ProgressBarUtil;
-import org.ash.util.Utils;
-import org.syntax.jedit.JEditTextArea;
 import com.egantt.model.drawing.ContextResources;
 import com.egantt.model.drawing.DrawingState;
 import com.egantt.swing.cell.CellState;
@@ -58,9 +28,26 @@ import com.egantt.swing.component.ComponentResources;
 import com.egantt.swing.component.context.BasicComponentContext;
 import com.egantt.swing.component.tooltip.ToolTipState;
 import com.egantt.swing.table.list.BasicJTableList;
-
 import ext.egantt.drawing.painter.context.BasicPainterContext;
 import ext.egantt.swing.GanttTable;
+import org.ash.database.ASHDatabase;
+import org.ash.gui.ASHMainrawdata;
+import org.ash.gui.GanttSplitPane;
+import org.ash.util.Options;
+import org.ash.util.ProgressBarUtil;
+import org.ash.util.Utils;
+import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
+import org.syntax.jedit.tokenmarker.CTokenMarker;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // dcvetkov import
 import org.ash.util.Options;
@@ -69,39 +56,38 @@ import java.nio.file.*;
 import java.io.IOException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
-import org.syntax.jedit.tokenmarker.CTokenMarker;
-import org.ash.database.DBUtils;
 
 /**
  * The Class SqlsAndSessionsGantt.
  */
-public class GanttDetailsH extends JPanel{
+public class StatGantt extends JPanel{
 
 	/** The main. */
 	private JPanel main;
+
+	/** The root. */
+	private JFrame root;
 	
 	/** The database. */
-	private ASHDatabaseH database;
+	private ASHDatabase database;
 		
 	/** The TEXT_PAINTER. */
 	final String TEXT_PAINTER = "MyTextPainter";
 		
 	/** Gantt graph data for Sqls */
-	private GanttSqls ganttSqls;
+	private StatGanttSqls ganttSqls;
 	
 	/** Gantt graph data for Sessions */
-	private GanttSessions ganttSessions;
+	private StatGanttSessions ganttSessions;
 	
 	/** The waitClass or CPU used */
 	private String waitClass = "none";
 	
 	/** SQL text */
-	private JEditTextArea jtextAreaSqlText = Options.getInstance().getJtextAreaSqlTextGanttDetailsH();
-	private JEditTextArea jtextAreaSqlPlan = Options.getInstance().getJtextAreaSqlPlanGanttDetailsH();
+	private JEditTextArea jtextAreaSqlText = new JEditTextArea();
+	private JEditTextArea jtextAreaSqlPlan = new JEditTextArea();
 	private String SQLTEXT = "";
 	private String SQLPLAN = "";
-
 	
 	/**
 	 * Constructor Gantt JPanel
@@ -110,16 +96,20 @@ public class GanttDetailsH extends JPanel{
 	 * @param model0 the model0
 	 * @param database0 the database0
 	 */
-	public GanttDetailsH(ASHDatabaseH database0, String waitClass0){
+	public StatGantt(JFrame rootFrame0, ASHDatabase database0, String waitClass0){
 		super();
 		setLayout(new GridLayout(1, 1, 3, 3));	
 		
 		this.database = database0;
+		this.root = rootFrame0;
 		this.waitClass = waitClass0;
 
 		// Initialize sqls and sessions
-		this.ganttSqls = new GanttSqls(database0);
-		this.ganttSessions = new GanttSessions(database0);
+		this.ganttSqls = new StatGanttSqls(database0);
+		this.ganttSessions = new StatGanttSessions(database0);
+		
+		this.jtextAreaSqlText.setTokenMarker(new PLSQLTokenMarker());
+		this.jtextAreaSqlText.setEditable(false);
 		
 		this.main = new JPanel();
 		this.main.setLayout(new GridLayout(1, 1, 3, 3));	
@@ -136,27 +126,23 @@ public class GanttDetailsH extends JPanel{
 	public synchronized void loadDataToJPanels(final double beginTime, final double endTime){
 		
 		this.main.removeAll();
-        JPanel panel = createProgressBar("Loading, please wait...");
-        this.main.add(panel);
-        this.validate();
+		this.root.repaint();
+	        JPanel panel = createProgressBar("Loading, please wait...");
+	        this.main.add(panel);
 		
-        Thread t = new Thread() {
-            @Override
-			public void run()
-            {
+	        Thread t = new Thread() {
+        	    @Override
+			public void run() {
             		// delay
-                     try
-                     {
-                         Thread.sleep(50L);
-                     }
-                     catch(InterruptedException e)
-                     {
-                         e.printStackTrace();
-                     }
-            	 loadDataToJPanelsPrivate(beginTime, endTime);
-            }
-        };
-        t.start();
+                        try {
+                             Thread.sleep(50L);
+                        } catch(InterruptedException e) {
+                             e.printStackTrace();
+                        }
+                        loadDataToJPanelsPrivate(beginTime, endTime);
+	            }
+        	};
+                t.start();
 	}
 	
 
@@ -177,6 +163,15 @@ public class GanttDetailsH extends JPanel{
 	public void setTopSqlsSqlText(int topSqlsSqlText) {
 		ganttSqls.setTopSqlsSqlText(topSqlsSqlText);
 	}
+	
+	/**
+	 * Is select sql plan
+	 * 
+	 * @param isSelect
+	 */
+	public void setSelectSqlPlan(boolean isSelect) {
+		ganttSqls.setSelectSqlPlan(isSelect);
+	}
 
 	/**
 	 * Load data to panels.
@@ -190,7 +185,6 @@ public class GanttDetailsH extends JPanel{
 		
 		this.database.getSqlsTempDetail().clear();
 		this.database.getSessionsTempDetail().clear();
-		
 		this.database.calculateSqlsSessionsData(beginTime, endTime, this.waitClass);
 		
 		List eventListSqls = this.database.getSqlsTempDetail().getEventList();
@@ -198,21 +192,18 @@ public class GanttDetailsH extends JPanel{
 		
 		// Load data to JTable model
 		try {
-			String sqlIdHash = "";
-			sqlIdHash = "SQL ID";
+			String sqlIdHash = "SQL ID";
 			
 			String[][] columnNamesSqls = {{"Activity %", sqlIdHash, "SQL Type"}};
 			String[][] columnNamesSessions = {{"Activity %", "PID", "User Name", "Program", "Backend Type"}};
 			
 			/** Array SqlIdText for SQL Text tab*/
-			Map<Integer,String> arraySqlIdText50SQLTextTab = new HashMap<Integer, String>();
+			Map<Integer, String> arraySqlIdText50SQLTextTab = new HashMap<Integer, String>();
 			
 			/** Create gantt table */
-			final GanttTable tableGanttSql = new GanttTable(
-					ganttSqls.getDataToSqlsGantt(arraySqlIdText50SQLTextTab), columnNamesSqls, getBasicJTableList(),eventListSqls);
-			final GanttTable tableGanttSessions = new GanttTable(
-					ganttSessions.getDataToSessionsGantt(), columnNamesSessions, getBasicJTableList(),eventListSessions);   
-						
+			final GanttTable tableGanttSql = new GanttTable(ganttSqls.getDataToSqlsGantt(arraySqlIdText50SQLTextTab), columnNamesSqls, getBasicJTableList(),eventListSqls);
+			final GanttTable tableGanttSessions = new GanttTable(ganttSessions.getDataToSessionsGantt(), columnNamesSessions, getBasicJTableList(),eventListSessions);   
+			
 			/** Set tooltip and percent*/
 			setTooltipAndPercent(tableGanttSql);
 			setTooltipAndPercent(tableGanttSessions);
@@ -238,6 +229,9 @@ public class GanttDetailsH extends JPanel{
 			        }
 			});
 
+			/** Left tabbed pane (Top SQL + SQL text)*/
+			JTabbedPane tabsRoot = new JTabbedPane();
+			
 			/** Top SQL pane*/
 			JScrollPane leftPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -254,8 +248,12 @@ public class GanttDetailsH extends JPanel{
 			leftPane.setViewportView(tableGanttSql.getJTable());
 			rightPane.setViewportView(tableGanttSessions.getJTable());
 			leftPane.setVerticalScrollBar(leftPane.getVerticalScrollBar());
-			rightPane.setVerticalScrollBar(rightPane.getVerticalScrollBar());	
-			
+			rightPane.setVerticalScrollBar(rightPane.getVerticalScrollBar());
+
+			/** Cell selection enabled for copying values */
+			tableGanttSql.getJTable().setCellSelectionEnabled(true);
+			tableGanttSessions.getJTable().setCellSelectionEnabled(true);
+
 			/** Add component to left tabs*/
 			tabsTopSQLText.add(leftPane,Options.getInstance().getResource("tabTopSQL.text"));
 			tabsTopSQLText.add(jtextAreaSqlText,Options.getInstance().getResource("tabSQLText.text"));
@@ -272,17 +270,21 @@ public class GanttDetailsH extends JPanel{
 			splitPane.setRightComponent(rightPane);
 			splitPane.setDividerLocation(this.getWidth()/2);
 			splitPane.setOneTouchExpandable(true);
-			
+
+			tabsRoot.add(splitPane,"Top sql & sessions");
+
+			tabsRoot.add(new ASHMainrawdata(root,database,beginTime,endTime,waitClass),"ASH raw data");
+
 			this.main.removeAll();
-			this.main.add(splitPane);
+			this.main.add(tabsRoot);
 	        this.validate();
 		    
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	
 	}
-	
 	/**
 	 *  Selection listener for Top SQL JTable
 	 */
@@ -292,12 +294,9 @@ public class GanttDetailsH extends JPanel{
 		JEditTextArea sqlTextArea;
 		JEditTextArea sqlPlanArea;
 		Map<Integer, String> arraySqlIdText50SQLTextTab;
-		ASHDatabaseH database;
+		ASHDatabase database;
 		
-		SelectionListener(JTable table, JTabbedPane tabbedpane,
-				JEditTextArea sqlTextArea, JEditTextArea sqlPlanArea,
-				Map<Integer, String> arraySqlIdText50SQLTextTab,
-				ASHDatabaseH database) {
+		SelectionListener(JTable table, JTabbedPane tabbedpane, JEditTextArea sqlTextArea, JEditTextArea sqlPlanArea, Map<Integer, String> arraySqlIdText50SQLTextTab, ASHDatabase database) {
 			this.table = table;
 			this.tabbedpane = tabbedpane;
 			this.sqlTextArea = sqlTextArea;
@@ -306,9 +305,6 @@ public class GanttDetailsH extends JPanel{
 			this.database = database;
 		}
 
-		/* (non-Javadoc)
-		 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-		 */
 		public void valueChanged(ListSelectionEvent e) {
 
 			if (e.getValueIsAdjusting()) {
@@ -356,7 +352,7 @@ public class GanttDetailsH extends JPanel{
 			} else {
 				tabbedpane.setEnabledAt(1, false);
 				sqlTextArea.setText("");
-			}
+			}			
 
 			// Load sql plan's for sql_id
 			if (sqlType.equalsIgnoreCase("SELECT")
@@ -364,9 +360,6 @@ public class GanttDetailsH extends JPanel{
 					|| sqlType.equalsIgnoreCase("UPDATE")
 					|| sqlType.equalsIgnoreCase("DELETE")) {
 				tabbedpane.setEnabledAt(2, true);
-				SQLPLAN = DBUtils.readPlan(sqlId);
-				/*
-
 				try {
 					// dcvetkov - load plan from file
 					String FILESEPARATOR = System.getProperty("file.separator");
@@ -381,8 +374,6 @@ public class GanttDetailsH extends JPanel{
 				} catch (Exception e1) {
 					System.out.println("Exception occured: " + e1.getMessage());
 				}
-				*/
-
 			} else {
 				tabbedpane.setEnabledAt(2, false);
 			}
@@ -391,49 +382,6 @@ public class GanttDetailsH extends JPanel{
 			tabbedpane.setComponentAt(2, sqlPlanArea);
 		}
 	}
-	
-	/**
-	 *  Selection listener for Top SQL JTable
-	 */
-	private class SelectionListener1 implements ListSelectionListener {
-	        JTable table;
-	        JTabbedPane tabbedpane;
-	        JEditTextArea sqlTextArea;
-	        Map<Integer,String> arraySqlIdText50SQLTextTab;
-	    
-	        SelectionListener1(JTable table,JTabbedPane tabbedpane, 
-	        		JEditTextArea sqlTextArea,Map<Integer,String> arraySqlIdText50SQLTextTab) {
-	            this.table = table;
-	            this.tabbedpane = tabbedpane;
-	            this.sqlTextArea = sqlTextArea;
-	            this.arraySqlIdText50SQLTextTab = arraySqlIdText50SQLTextTab;
-	        }
-
-			/* (non-Javadoc)
-			 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-			 */
-			public void valueChanged(ListSelectionEvent e) {
-				final String sqlText = arraySqlIdText50SQLTextTab.get(table.getSelectedRow());
-				if (sqlText != null && sqlText != ""){
-					tabbedpane.setEnabledAt(1, true);
-					
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							try {
-								SQLTEXT = Utils.formatSqlAll(sqlText).toString();
-							} catch (Exception e) {
-								SQLTEXT = "Error in syntax highlighting of sql!";
-							}
-						}
-					});
-					
-				} else {
-					tabbedpane.setEnabledAt(1, false);
-					sqlTextArea.setText("");
-				}
-			}
-	  }
-	
 	
 	/**
 	 * Get BasicJTableList
@@ -505,5 +453,5 @@ public class GanttDetailsH extends JPanel{
 	        panel.add(progress);
 	        return panel;
 	    }
-	
+		
 }

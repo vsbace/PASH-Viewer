@@ -278,7 +278,7 @@ public class ConnectionFrame extends JDialog {
    * @param e the ActionEvent
    */
   void newButton_actionPerformed(ActionEvent e) {
-    new ConnectionDialog(parent,this,new DbConnection("","","","",""),ConnectionDialog.INSERT);
+    new ConnectionDialog(parent,this,new DbConnection("","","","","",""),ConnectionDialog.INSERT);
   }
 
 
@@ -396,7 +396,8 @@ public class ConnectionFrame extends JDialog {
           c.getClassName(),
           c.getUrl(),
           c.getUsername(),
-          c.getPassword()
+          c.getPassword(),
+          c.getSchema()
         ),
         ConnectionDialog.COPY
     );

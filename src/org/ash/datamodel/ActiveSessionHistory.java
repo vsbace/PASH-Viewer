@@ -72,7 +72,10 @@ class ActiveSessionHistory {
 	String program;
 	String hostname;
 
-	public ActiveSessionHistory(long activeSessionHistoryId, long sampleId, long sessionId, String backendType, long userId, String userName, String sqlId, String command_type, String event, String waitClass, double waitClassId, String program, String hostname) {
+	long queryStart;
+	Double duration;
+
+	public ActiveSessionHistory(long activeSessionHistoryId, long sampleId, long sessionId, String backendType, long userId, String userName, String sqlId, String command_type, String event, String waitClass, double waitClassId, String program, String hostname, long queryStart, Double duration) {
 
 
 		this.activeSessionHistoryId = activeSessionHistoryId;
@@ -89,6 +92,8 @@ class ActiveSessionHistory {
 		this.waitClassId = waitClassId;
 		this.program = program;
 		this.hostname = hostname;
+		this.queryStart = queryStart;
+		this.duration = duration;
 	}
 
     /**
@@ -112,6 +117,15 @@ class ActiveSessionHistory {
 	 */
 	public long getSampleId() {
 		return sampleId;
+	}
+
+
+	public long getQueryStart() {
+		return queryStart;
+	}
+
+	public Double getDuration() {
+		return duration;
 	}
 
 	/**
@@ -227,7 +241,7 @@ class ActiveSessionHistory {
 				+ super.toString() + TAB
 				+ "activeSessionHistoryId = " + this.activeSessionHistoryId + TAB
 				+ "sampleId = " + this.sampleId + TAB
-				+ "sessionId = " + this.sessionId + TAB
+				+ "pid = " + this.sessionId + TAB
 				+ "backendType = " + this.backendType + TAB
 				+ "userId = " + this.userId + TAB
 				+ "userName = " + this.userName + TAB
@@ -238,8 +252,9 @@ class ActiveSessionHistory {
 				+ "waitClassId = " + this.waitClassId + TAB
 				+ "program = " + this.program + TAB
 				+ "hostname = " + this.hostname + TAB
+				+ "queryStart = " + this.queryStart + TAB
+				+ "duration = " + this.duration + TAB
 				+ " )";
-
 		return retValue;
 	}
 }

@@ -46,6 +46,8 @@ public class DbConnection {
   
   /** The password. */
   private String password;
+
+  private String schema;
   
   /**
    * Instantiates a new db connection.
@@ -61,12 +63,14 @@ public class DbConnection {
       String className,
       String url,
       String username,
-      String password) {
+      String password,
+      String schema) {
     this.name = name;
     this.className = className;
     this.url = url;
     this.username = username;
     this.password = password;
+    this.schema = schema;
   }
   
   /**
@@ -136,6 +140,10 @@ public class DbConnection {
     return name;
   }
 
+  public String getSchema() {
+    return schema;
+  }
+
   /**
    * Gets the url.
    * 
@@ -188,6 +196,10 @@ public class DbConnection {
    */
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public void setSchema(String schema) {
+    this.schema = schema;
   }
 
   /**

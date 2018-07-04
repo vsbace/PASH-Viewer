@@ -298,6 +298,24 @@ public class Options {
     this.planDir = planDir;
   }
   
+
+  private String schema;
+  public String getSchema() {
+	  return schema;
+  }
+  public void setSchema(String schema) {
+	  this.schema = schema;
+  }
+
+  // default explainFreq = 10 min
+  private int explainFreq = 600000;
+  public int getExplainFreq() {
+	  return explainFreq;
+  }
+  public void setExplainFreq(int explainFreq) {
+	  this.explainFreq = explainFreq;
+  }
+
   /**
    * Get the directory of Berkley DB
    * 
