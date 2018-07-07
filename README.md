@@ -10,6 +10,8 @@
   PASH Viewer store ASH data locally using embedded database Oracle Berkeley DB Java Edition.
   The default capture rate is one snapshot every 1 seconds.
   PASH Viewer support PostgreSQL 10 (and 9.4 - 9.6 with limited functions).
+  
+  Read how it works: https://github.com/dbacvetkov/PASH-Viewer/wiki
 
   Use superuser (postgres) to connect to DB, if you want to see query plans.
   Or use your special user for monitoring:
