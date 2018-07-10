@@ -90,7 +90,7 @@ public class ASHDatabasePG96 extends ASHDatabase {
             + "application_name, "
             + "coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname, "
             + "wait_event_type, wait_event, query, "
-            + "query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-query_start)) as duration "
+            + "coalesce(query_start, xact_start, backend_start) as query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-coalesce(query_start, xact_start, backend_start))) as duration "
             + "from pg_stat_activity "
             + "where state='active' and pid != pg_backend_pid()";
 
@@ -208,7 +208,11 @@ public class ASHDatabasePG96 extends ASHDatabase {
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
 
                     java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
-                    Long queryStartLong = (new Long(queryStartTS.getTime()));
+		    Long queryStartLong = 0L;
+                    if (queryStartTS != null) {
+			queryStartLong = (new Long(queryStartTS.getTime()));
+                    }
+
                     Double duration = resultSetAsh.getDouble("duration");
 
                     Long sessionId = resultSetAsh.getLong("pid");

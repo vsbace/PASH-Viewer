@@ -88,7 +88,7 @@ public class ASHDatabasePG10 extends ASHDatabase {
             + "application_name, backend_type, "
             + "coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname, "
             + "wait_event_type, wait_event, query, "
-            + "query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-query_start)) as duration "
+            + "coalesce(query_start, xact_start, backend_start) as query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-coalesce(query_start, xact_start, backend_start))) as duration "
             + "from pg_stat_activity "
             + "where state='active' and pid != pg_backend_pid()";
 
@@ -206,7 +206,11 @@ public class ASHDatabasePG10 extends ASHDatabase {
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
 
                     java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
-                    Long queryStartLong = (new Long(queryStartTS.getTime()));
+		    Long queryStartLong = 0L;
+                    if (queryStartTS != null) {
+			queryStartLong = (new Long(queryStartTS.getTime()));
+                    }
+
                     Double duration = resultSetAsh.getDouble("duration");
 
                     Long sessionId = resultSetAsh.getLong("pid");
@@ -311,6 +315,7 @@ public class ASHDatabasePG10 extends ASHDatabase {
                     if (command_type.equals("SELECT") || command_type.equals("UPDATE") || command_type.equals("DELETE") || command_type.equals("INSERT")) {
 			if ((connDBName.length() > 0) && (explainFreq > 0)) {
 			    DBUtils.explainPlan(sqlId, query_text, command_type, planDir, fileSeparator, connDBName, databaseName, conn, explainFreq);
+			    // DBUtils.FindQueryID(sqlId, query_text_norm, conn);
 			}
                     }
 
@@ -644,7 +649,11 @@ public class ASHDatabasePG10 extends ASHDatabase {
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
 
                     java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
-                    Long queryStartLong = (new Long(queryStartTS.getTime()));
+		    Long queryStartLong = 0L;
+                    if (queryStartTS != null) {
+			queryStartLong = (new Long(queryStartTS.getTime()));
+                    }
+
                     Double duration = resultSetAsh.getDouble("duration");
 
                     Long sessionId = resultSetAsh.getLong("pid");

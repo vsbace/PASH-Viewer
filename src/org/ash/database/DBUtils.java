@@ -35,14 +35,30 @@ public class DBUtils {
         for (int i = 0; i < array.length; i++) {
             if (array[i].equals("select")) {
                 return "SELECT";
-            } else if (array[i].equals("insert")) {
-                return "INSERT";
             } else if (array[i].equals("update")) {
                 return "UPDATE";
             } else if (array[i].equals("insert")) {
                 return "INSERT";
             } else if (array[i].equals("delete")) {
                 return "DELETE";
+            } else if (array[i].equals("with")) {
+		int s = 0;
+                for (int j = i; j < array.length; j++) {
+			if (array[j].equals("(")) { s++; }
+			else if (array[j].equals(")")) { s--; }
+			else if (s == 0) {
+		            if (array[j].equals("select")) {
+		                return "SELECT";
+		            } else if (array[j].equals("update")) {
+		                return "UPDATE";
+		            } else if (array[j].equals("insert")) {
+		                return "INSERT";
+		            } else if (array[j].equals("delete")) {
+		                return "DELETE";
+		            } 
+			}
+		}
+		return "UNKNOWN";
             } else if (array[i].equals("drop")) {
                 return "DROP";
             } else if (array[i].equals("truncate")) {
@@ -390,4 +406,48 @@ public class DBUtils {
         }
     }
 
+
+    public static void FindQueryID(String sqlId, String query_text_norm, Connection conn) {
+
+		String queryid = "";
+
+                ResultSet rs1 = null;
+                PreparedStatement st1 = null;
+                try {
+			// pg_stat_statements не добавляет пробелы вокруг $1, т.е. там может быть "where id=$1"
+                    st1 = conn.prepareStatement("select queryid from pg_stat_statements where query = '" + query_text_norm + "'");
+                    st1.setQueryTimeout(1);
+                    rs1 = st1.executeQuery();
+                } catch (Exception e) {
+                    queryid = "";
+                }
+
+                if (rs1 != null) {
+                    try {
+                        while (rs1.next()) {
+                            queryid = "";
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        rs1.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (st1 != null) {
+                    try {
+                        st1.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+    }
+
+
+
 }
+
