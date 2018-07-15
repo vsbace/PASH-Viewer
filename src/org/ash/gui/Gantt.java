@@ -241,6 +241,9 @@ public class Gantt extends JPanel {
 		// Load data to JTable model
 		try {
 			String sqlIdHash = "SQL ID";
+			if (Options.getInstance().getASHsupport()) {
+				sqlIdHash = "QueryID";
+			}
 
 			String[][] columnNamesSqls = { { "Activity %", sqlIdHash, "SQL Type", "Calls", "AVG Duration (ms)" } };
 			String[][] columnNamesSessions = { { "Activity %", "PID", "User Name", "Program", "Backend Type" } };

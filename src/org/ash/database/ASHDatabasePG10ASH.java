@@ -1,6 +1,6 @@
 /*
  *-------------------
- * The ASHDatabasePG10.java is part of ASH Viewer
+ * The ASHDatabasePG10ASH.java is part of ASH Viewer
  *-------------------
  *
  * ASH Viewer is free software: you can redistribute it and/or modify
@@ -51,9 +51,9 @@ import com.sleepycat.persist.EntityStore;
 import org.ash.util.Options;
 
 /**
- * The Class ASHDatabasePG10.
+ * The Class ASHDatabasePG10ASH.
  */
-public class ASHDatabasePG10 extends ASHDatabase {
+public class ASHDatabasePG10ASH extends ASHDatabase {
 
     /**
      * The model.
@@ -83,20 +83,20 @@ public class ASHDatabasePG10 extends ASHDatabase {
     /**
      * The query ash.
      */
-    private String queryASH = "SELECT current_timestamp, "
+    private String queryASH = "SELECT ash_time, "
             + "datname, pid, usesysid, usename, "
             + "application_name, backend_type, "
             + "coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname, "
-            + "wait_event_type, wait_event, query, "
+            + "wait_event_type, wait_event, query, queryid, "
             + "coalesce(query_start, xact_start, backend_start) as query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-coalesce(query_start, xact_start, backend_start))) as duration "
-            + "from pg_stat_activity "
+            + "from pg_active_session_history "
             + "where state='active' and pid != pg_backend_pid()";
 
     private String fileSeparator = System.getProperty("file.separator");
     private String planDir = Options.getInstance().getPlanDir();
 
 
-
+    private java.sql.Timestamp PGDateLastSampleTime;
     /**
      * The k for sample_id after reconnect
      */
@@ -112,7 +112,7 @@ public class ASHDatabasePG10 extends ASHDatabase {
      *
      * @param model0 the model0
      */
-    public ASHDatabasePG10(Model model0) {
+    public ASHDatabasePG10ASH(Model model0) {
         super(model0);
         this.model = model0;
         this.store = super.getStore();
@@ -127,12 +127,12 @@ public class ASHDatabasePG10 extends ASHDatabase {
         // Get max value of ash
         super.initializeVarsOnLoad();
 
-        // Load data to activeSessionHistoryById
-        loadHistAshDataToLocal();
+	// Load data to activeSessionHistoryById
+	loadAshDataToLocal();
 
-	// dcvetkov
-	// super.loadToSubByEventAnd10Sec();
-	super.loadToSubByEventAnd10Sec_all_history_at_start();
+
+
+	super.loadToSubByEventAnd10Sec();
     }
 
     /* (non-Javadoc)
@@ -145,7 +145,7 @@ public class ASHDatabasePG10 extends ASHDatabase {
 
         // Load data to activeSessionHistoryById
         loadAshDataToLocal();
-
+	super.loadToSubByEventAnd10Sec();
     }
 
     /* (non-Javadoc)
@@ -187,12 +187,12 @@ public class ASHDatabasePG10 extends ASHDatabase {
 
                 conn = this.model.getConnectionPool().getConnection();
 
-                statement = conn.prepareStatement(this.queryASH);
-
-
-
-
-
+		if (PGDateLastSampleTime == null) {
+			statement = conn.prepareStatement(queryASH);
+		} else {
+			statement = conn.prepareStatement(queryASH + " and ash_time > ?");
+			statement.setTimestamp(1, PGDateLastSampleTime);
+		}
 
                 // set ArraySize for current statement to improve performance
                 statement.setFetchSize(5000);
@@ -211,14 +211,14 @@ public class ASHDatabasePG10 extends ASHDatabase {
                     }
 
                     // Calculate sample time
-                    java.sql.Timestamp PGDateSampleTime = resultSetAsh.getTimestamp("current_timestamp");
+                    java.sql.Timestamp PGDateSampleTime = resultSetAsh.getTimestamp("ash_time");
                     Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
 
-
-
-
-
-
+                    if (PGDateLastSampleTime == null) {
+			PGDateLastSampleTime = PGDateSampleTime;
+                    } else if(PGDateSampleTime.after(PGDateLastSampleTime)) {
+			PGDateLastSampleTime = PGDateSampleTime;
+                    }
 
                     java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
 		    Long queryStartLong = 0L;
@@ -253,7 +253,8 @@ public class ASHDatabasePG10 extends ASHDatabase {
 
                     String query_text_norm = DBUtils.NormalizeSQL(query_text);
                     String command_type = DBUtils.GetSQLCommandType(query_text_norm);
-                    String sqlId = DBUtils.md5Custom(query_text_norm);
+                    Long queryid = resultSetAsh.getLong("queryid");
+                    String sqlId = queryid.toString();
 
                     /* System.out.println(query_text);
                     System.out.println(query_text_norm);
@@ -331,7 +332,6 @@ public class ASHDatabasePG10 extends ASHDatabase {
                     if (command_type.equals("SELECT") || command_type.equals("UPDATE") || command_type.equals("DELETE") || command_type.equals("INSERT")) {
 			if ((connDBName.length() > 0) && (explainFreq > 0)) {
 			    DBUtils.explainPlan(sqlId, query_text, command_type, planDir, fileSeparator, connDBName, databaseName, conn, explainFreq);
-			    // DBUtils.FindQueryID(sqlId, query_text_norm, conn);
 			}
                     }
 
@@ -614,192 +614,5 @@ public class ASHDatabasePG10 extends ASHDatabase {
     private void setReconnect(boolean isReconnect) {
         this.isReconnect = isReconnect;
     }
-
-
-
-
-
-
-
-    private void loadHistAshDataToLocal() {
-
-        ResultSet resultSetAsh = null;
-        PreparedStatement statement = null;
-        Connection conn = null;
-
-        // Get sequence activeSessionHistoryId
-        try {
-            seq = store.getSequence("activeSessionHistoryId");
-        } catch (DatabaseException e) {
-            // e.printStackTrace();
-        }
-
-        try {
-
-            if (model.getConnectionPool() != null) {
-
-                conn = this.model.getConnectionPool().getConnection();
-
-                statement = conn.prepareStatement("select * from pg_stat_activity_history order by sample_time");
-
-                // set ArraySize for current statement to improve performance
-                statement.setFetchSize(5000);
-
-		try {
-                	resultSetAsh = statement.executeQuery();
-	        } catch (SQLException e) {
-			return;
-		}
-
-                while (resultSetAsh.next()) {
-
-                    long activeSessionHistoryIdWait = 0;
-                    try {
-                        activeSessionHistoryIdWait = seq.get(null, 1);
-                    } catch (DatabaseException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Calculate sample time
-                    java.sql.Timestamp PGDateSampleTime = resultSetAsh.getTimestamp("sample_time");
-                    Long valueSampleIdTimeLongWait = (new Long(PGDateSampleTime.getTime()));
-
-                    java.sql.Timestamp queryStartTS = resultSetAsh.getTimestamp("query_start");
-		    Long queryStartLong = 0L;
-                    if (queryStartTS != null) {
-			queryStartLong = (new Long(queryStartTS.getTime()));
-                    }
-
-                    Double duration = resultSetAsh.getDouble("duration");
-
-                    Long sessionId = resultSetAsh.getLong("pid");
-                    String backendType = resultSetAsh.getString("backend_type");
-
-                    String databaseName = resultSetAsh.getString("datname");
-
-                    Long userId = resultSetAsh.getLong("usesysid");
-                    String userName = resultSetAsh.getString("usename");
-
-                    String program = resultSetAsh.getString("application_name");
-
-                    String query_text = resultSetAsh.getString("query");
-                    if ((query_text == null) || (query_text.equals(""))) {
-                        if (program.equals("pg_basebackup")) {
-                            query_text = "backup";
-                        } else if (program.equals("walreceiver") || program.equals("walsender")) {
-                            query_text = "wal";
-                        } else if (backendType.equals("walreceiver") || backendType.equals("walsender")) {
-                            query_text = "wal";
-                        } else {
-                            query_text = "empty";
-                        }
-                    }
-                    String query_text_norm = DBUtils.NormalizeSQL(query_text);
-                    String command_type = DBUtils.GetSQLCommandType(query_text_norm);
-                    String sqlId = DBUtils.md5Custom(query_text_norm);
-
-                    /* System.out.println(query_text);
-                    System.out.println(query_text_norm);
-                    System.out.println(sqlId);
-                    System.out.println("");
-                     */
-                    String hostname = resultSetAsh.getString("client_hostname");
-                    String event = resultSetAsh.getString("wait_event");
-                    String waitClass = resultSetAsh.getString("wait_event_type");
-
-                    if (waitClass == null) {
-                        waitClass = "CPU";
-                        event = "CPU";
-                    }
-
-                    if ((event == null) || (event.equals(""))) {
-                        event = waitClass;
-                    }
-
-                    if (event.equals("PgSleep")&&query_text.contains("pg_stat_activity_snapshot")) {
-			continue;
-		    }
-
-                    Double waitClassId = 0.0;
-
-                    if (waitClass.equals("CPU")) {
-                        waitClassId = 0.0;
-                    } else if (waitClass.equals("IO")) {
-                        waitClassId = 1.0;
-                    } else if (waitClass.equals("Lock")) {
-                        waitClassId = 2.0;
-                    } else if (waitClass.equals("LWLock")) {
-                        waitClassId = 3.0;
-                    } else if (waitClass.equals("BufferPin")) {
-                        waitClassId = 4.0;
-                    } else if (waitClass.equals("Activity")) {
-                        waitClassId = 5.0;
-                    } else if (waitClass.equals("Extension")) {
-                        waitClassId = 6.0;
-                    } else if (waitClass.equals("Client")) {
-                        waitClassId = 7.0;
-                    } else if (waitClass.equals("IPC")) {
-                        waitClassId = 8.0;
-                    } else if (waitClass.equals("Timeout")) {
-                        waitClassId = 9.0;
-                    }
-
-                    // Create row for wait event
-                    try {
-                        dao.ashById.putNoOverwrite(new AshIdTime(valueSampleIdTimeLongWait, valueSampleIdTimeLongWait.doubleValue()));
-                    } catch (DatabaseException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Load data for active session history (wait event)
-                    try {
-                        dao.activeSessionHistoryById
-                                .putNoReturn(new ActiveSessionHistory(
-                                        activeSessionHistoryIdWait,
-                                        valueSampleIdTimeLongWait,
-                                        sessionId, backendType, userId, userName, sqlId, command_type,
-                                        event, waitClass, waitClassId, program, hostname, queryStartLong, duration));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    // dcvetkov: Load data for sqlid: command type and query text
-                    try {
-                        dao.ashSqlIdTypeTextId.putNoReturn(new AshSqlIdTypeText(sqlId, command_type, query_text_norm));
-                    } catch (DatabaseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (conn != null) {
-                    model.getConnectionPool().free(conn);
-                }
-            } else {
-                // Connect is lost
-                setReconnect(true);
-                model.closeConnectionPool();
-                model.connectionPoolInitReconnect();
-            }
-
-        } catch (SQLException e) {
-            System.out.println("SQL Exception occured: " + e.getMessage());
-            model.closeConnectionPool();
-        } finally {
-            if (resultSetAsh != null) {
-                try {
-                    resultSetAsh.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 
 }

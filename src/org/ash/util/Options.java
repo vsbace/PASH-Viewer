@@ -49,7 +49,8 @@ public class Options {
 
   /** The db version. */
   private String versionDb;
-  
+  private Boolean ASHsupport;
+
   /** The language. */
   private String language = null;
 
@@ -519,6 +520,15 @@ public class Options {
   public void setVersionDb(String versionDb) {
 	  this.versionDb = versionDb;
   }
+
+
+  public Boolean getASHsupport() {
+	  return ASHsupport;
+  }
+  public void setASHsupport(Boolean ASHsupport) {
+	  this.ASHsupport = ASHsupport;
+  }
+
 
   /**
    * Get db edition (EE/SE)

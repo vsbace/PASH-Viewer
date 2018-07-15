@@ -406,48 +406,4 @@ public class DBUtils {
         }
     }
 
-
-    public static void FindQueryID(String sqlId, String query_text_norm, Connection conn) {
-
-		String queryid = "";
-
-                ResultSet rs1 = null;
-                PreparedStatement st1 = null;
-                try {
-			// pg_stat_statements не добавляет пробелы вокруг $1, т.е. там может быть "where id=$1"
-                    st1 = conn.prepareStatement("select queryid from pg_stat_statements where query = '" + query_text_norm + "'");
-                    st1.setQueryTimeout(1);
-                    rs1 = st1.executeQuery();
-                } catch (Exception e) {
-                    queryid = "";
-                }
-
-                if (rs1 != null) {
-                    try {
-                        while (rs1.next()) {
-                            queryid = "";
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        rs1.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (st1 != null) {
-                    try {
-                        st1.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-    }
-
-
-
 }
-

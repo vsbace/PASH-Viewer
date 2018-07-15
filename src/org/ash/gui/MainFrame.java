@@ -334,11 +334,17 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void initializeBerkeleyDatabaseAndLoading() {
 
 		String versionOracleDB = model.getVersionDB();
+		Boolean ASHsupport = model.getASHsupport();
 
 		if (versionOracleDB.startsWith("11")) {
 			this.database = new ASHDatabasePG10(this.model);
 		} else if (versionOracleDB.startsWith("10.")) {
-			this.database = new ASHDatabasePG10(this.model);
+			if(ASHsupport) {
+				this.database = new ASHDatabasePG10ASH(this.model);
+				// this.database = new ASHDatabasePG10(this.model);
+			} else {
+				this.database = new ASHDatabasePG10(this.model);
+			}
 		} else if (versionOracleDB.equals("9.6")) {
 			this.database = new ASHDatabasePG96(this.model);
 		} else if (versionOracleDB.startsWith("9.")) {
@@ -410,13 +416,17 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void setTitle() {
 
 		String PGVersion = Options.getInstance().getVersionDb();
+		String ASHsupport = "";
+		if (Options.getInstance().getASHsupport()) {
+			ASHsupport = " with ASH support";
+		}
 		/** set title of current frame*/
 		this.setTitle("PASH Viewer ::: "
 				+ dbConnUtil.getDbConnection().getUsername() + "@"
 				+ dbConnUtil.getDbConnection().getHost() + ":"
 				+ dbConnUtil.getDbConnection().getPort() + "/"
 				+ dbConnUtil.getDbConnection().getDB() 
-				+ " (pg version = " + PGVersion + ")");
+				+ " (pg version = " + PGVersion + ASHsupport + ")");
 		
 		/** load parameters to local BDB */
 		this.database.saveParameterToLocalBDB("ASH.name", dbConnUtil.getDbConnection().getName());
@@ -453,6 +463,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
 		Options.getInstance().setNameOfConnection(dbConnUtil.getDbConnection().getName());
 		Options.getInstance().setVersionDb(model.getVersionDB());
+		Options.getInstance().setASHsupport(model.getASHsupport());
 	}
 
 	/**

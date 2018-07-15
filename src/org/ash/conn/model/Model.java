@@ -37,6 +37,7 @@ public class Model {
 
 	/** The version db. */
 	private String versionDB;
+	private Boolean ASHsupport;
     
 	/** The catalog names. */
 	private String catalogNames[];
@@ -114,7 +115,8 @@ public class Model {
 
 		try {
 			Connection conn = connectionPool.getConnection();
-			tmpVersion = conn.getMetaData().getDatabaseProductVersion().toString();
+			DatabaseMetaData dbmd = conn.getMetaData();
+			tmpVersion = dbmd.getDatabaseProductVersion().toString();
 			String[] array = tmpVersion.split("\\.", -1);
 
 			if(array.length > 1) {
@@ -127,12 +129,18 @@ public class Model {
 
 			setVersionDB(dbversion);
 
+			ResultSet rs = dbmd.getTables(null, null, "pg_active_session_history", null);
+			if (rs.next()) {
+				setASHsupport(true);
+			} else {
+				setASHsupport(false);
+			}
+
 			if (conn != null) {
 				connectionPool.free(conn);
 			} else {
 				connectionPool.closeAllConnections();
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -313,6 +321,14 @@ public class Model {
 	protected void setVersionDB(String tmpVersionShort) {
 		this.versionDB = tmpVersionShort;
 	}
+
+	protected void setASHsupport(Boolean ASHsupport) {
+		this.ASHsupport = ASHsupport;
+	}
+	public Boolean getASHsupport() {
+		return ASHsupport;
+	}
+
 
 	/**
 	 * Gets the connection string.
