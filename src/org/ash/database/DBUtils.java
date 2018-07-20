@@ -73,7 +73,7 @@ public class DBUtils {
                 return "BEGIN";
             } else if (array[i].equals("vacuum")) {
                 return "VACUUM";
-            } else if (array[i].equals("autovacuum:")) {
+            } else if (array[i].equals("autovacuum:")||array[i].equals("autovacuum")) {
                 return "AUTOVACUUM";
             } else if (array[i].equals("analyze")) {
                 return "ANALYZE";

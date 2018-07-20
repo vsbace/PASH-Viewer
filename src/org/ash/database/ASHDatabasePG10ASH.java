@@ -88,7 +88,7 @@ public class ASHDatabasePG10ASH extends ASHDatabase {
             + "application_name, backend_type, "
             + "coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname, "
             + "wait_event_type, wait_event, query, queryid, "
-            + "coalesce(query_start, xact_start, backend_start) as query_start, 1000 * EXTRACT(EPOCH FROM (clock_timestamp()-coalesce(query_start, xact_start, backend_start))) as duration "
+            + "coalesce(query_start, xact_start, backend_start) as query_start, 1000 * EXTRACT(EPOCH FROM (ash_time - coalesce(query_start, xact_start, backend_start))) as duration "
             + "from pg_active_session_history "
             + "where state='active' and pid != pg_backend_pid()";
 
@@ -246,6 +246,8 @@ public class ASHDatabasePG10ASH extends ASHDatabase {
                                 query_text = "wal";
                         } else if(backendType != null && (backendType.equals("walreceiver") || backendType.equals("walsender"))) {
                                 query_text = "wal";
+                        } else if(backendType != null && (backendType.equals("autovacuum worker"))) {
+                                query_text = "autovacuum";
                         } else {
                                 query_text = "empty";
 			}

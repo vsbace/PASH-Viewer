@@ -341,7 +341,6 @@ public class MainFrame extends JFrame implements ActionListener{
 		} else if (versionOracleDB.startsWith("10.")) {
 			if(ASHsupport) {
 				this.database = new ASHDatabasePG10ASH(this.model);
-				// this.database = new ASHDatabasePG10(this.model);
 			} else {
 				this.database = new ASHDatabasePG10(this.model);
 			}
