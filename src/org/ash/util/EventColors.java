@@ -78,7 +78,7 @@ public class EventColors {
                 this.seriesNameColor.put("buffer_content", new Color(18,237,246));
                 this.seriesNameColor.put("buffer_io", new Color(19,136,10));
                 this.seriesNameColor.put("buffer_mapping", new Color(220,35,245));
-                this.seriesNameColor.put("BufFileWrite", new Color(22,233,244));
+                this.seriesNameColor.put("BufFileWrite", new Color(255,105,0));
                 this.seriesNameColor.put("BufFileRead", new Color(22,233,44));
                 this.seriesNameColor.put("CheckpointerCommLock", new Color(23,232,12));
                 this.seriesNameColor.put("CheckpointerMain", new Color(24,231,243));
@@ -236,7 +236,7 @@ public class EventColors {
                 this.seriesNameColor.put("TwophaseFileWrite", new Color(159,96,80));
                 this.seriesNameColor.put("TwoPhaseStateLock", new Color(160,95,175));
                 this.seriesNameColor.put("userlock", new Color(161,94,81));
-                this.seriesNameColor.put("virtualxid", new Color(162,93,174));
+                this.seriesNameColor.put("virtualxid", new Color(208,105,0));
                 this.seriesNameColor.put("WALBootstrapSync", new Color(163,92,82));
                 this.seriesNameColor.put("WALBootstrapWrite", new Color(164,91,173));
                 this.seriesNameColor.put("WALBufMappingLock", new Color(165,90,83));
@@ -244,7 +244,6 @@ public class EventColors {
                 this.seriesNameColor.put("WALCopySync", new Color(167,88,84));
                 this.seriesNameColor.put("WALCopyWrite", new Color(168,87,171));
                 this.seriesNameColor.put("WALInitSync", new Color(169,86,85));
-                this.seriesNameColor.put("WALInitWrite", new Color(170,85,170));
                 this.seriesNameColor.put("wal_insert", new Color(46,184,86));
                 this.seriesNameColor.put("WALRead", new Color(172,83,169));
                 this.seriesNameColor.put("WalReceiverMain", new Color(173,82,87));
@@ -254,6 +253,7 @@ public class EventColors {
                 this.seriesNameColor.put("WalSenderWaitForWAL", new Color(177,78,89));
                 this.seriesNameColor.put("WalSenderWriteData", new Color(178,77,166));
                 this.seriesNameColor.put("WALSyncMethodAssign", new Color(179,76,90));
+                this.seriesNameColor.put("WALInitWrite", new Color(111,85,170));
                 this.seriesNameColor.put("WALWrite", new Color(180,75,165));
                 this.seriesNameColor.put("WALWriteLock", new Color(139,26,0));
                 this.seriesNameColor.put("WalWriterMain", new Color(182,73,164));
