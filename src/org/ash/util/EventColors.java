@@ -73,7 +73,7 @@ public class EventColors {
                 this.seriesNameColor.put("BgWorkerShutdown", new Color(113,142,7));
                 this.seriesNameColor.put("BgWriterHibernate", new Color(14,241,248));
                 this.seriesNameColor.put("BgWriterMain", new Color(15,240,8));
-                this.seriesNameColor.put("BtreePage", new Color(16,239,247));
+                this.seriesNameColor.put("BtreePage", new Color(255,112,0));
                 this.seriesNameColor.put("BtreeVacuumLock", new Color(17,238,9));
                 this.seriesNameColor.put("buffer_content", new Color(18,237,246));
                 this.seriesNameColor.put("buffer_io", new Color(19,136,10));
@@ -167,7 +167,7 @@ public class EventColors {
                 this.seriesNameColor.put("page", new Color(93,162,47));
                 this.seriesNameColor.put("ParallelBitmapScan", new Color(94,161,208));
                 this.seriesNameColor.put("ParallelCreateIndexScan", new Color(194,61,208));
-                this.seriesNameColor.put("ParallelFinish", new Color(95,160,48));
+                this.seriesNameColor.put("ParallelFinish", new Color(4,170,18));
                 this.seriesNameColor.put("parallel_query_dsa", new Color(96,159,207));
                 this.seriesNameColor.put("parallel_append", new Color(196,159,107));
                 this.seriesNameColor.put("parallel_hash_join", new Color(96,59,107));
