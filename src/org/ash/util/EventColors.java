@@ -85,7 +85,7 @@ public class EventColors {
                 this.seriesNameColor.put("CheckpointLock", new Color(25,230,13));
                 this.seriesNameColor.put("ClientRead", new Color(159,147,113));
                 this.seriesNameColor.put("ClientWrite", new Color(161,61,61));
-                this.seriesNameColor.put("clog", new Color(28,227,241));
+                this.seriesNameColor.put("clog", new Color(115,105,172));
                 this.seriesNameColor.put("CLogControlLock", new Color(29,226,15));
                 this.seriesNameColor.put("ClogGroupUpdate", new Color(129,126,15));
                 this.seriesNameColor.put("CLogTruncationLock", new Color(30,225,240));
@@ -244,8 +244,7 @@ public class EventColors {
                 this.seriesNameColor.put("WALCopySync", new Color(167,88,84));
                 this.seriesNameColor.put("WALCopyWrite", new Color(168,87,171));
                 this.seriesNameColor.put("WALInitSync", new Color(169,86,85));
-                this.seriesNameColor.put("wal_insert", new Color(46,184,86));
-                this.seriesNameColor.put("WALRead", new Color(172,83,169));
+                this.seriesNameColor.put("wal_insert", new Color(140,26,172));
                 this.seriesNameColor.put("WalReceiverMain", new Color(173,82,87));
                 this.seriesNameColor.put("WalReceiverWaitStart", new Color(174,81,168));
                 this.seriesNameColor.put("WalSenderMain", new Color(175,80,88));
@@ -254,12 +253,11 @@ public class EventColors {
                 this.seriesNameColor.put("WalSenderWriteData", new Color(178,77,166));
                 this.seriesNameColor.put("WALSyncMethodAssign", new Color(179,76,90));
                 this.seriesNameColor.put("WALInitWrite", new Color(111,85,170));
+                this.seriesNameColor.put("WALRead", new Color(128,184,116));
                 this.seriesNameColor.put("WALWrite", new Color(180,75,165));
                 this.seriesNameColor.put("WALWriteLock", new Color(139,26,0));
                 this.seriesNameColor.put("WalWriterMain", new Color(182,73,164));
                 this.seriesNameColor.put("XidGenLock", new Color(23,72,92));
-
-
 
 		} catch (Exception e){
      		e.printStackTrace();
