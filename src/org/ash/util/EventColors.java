@@ -102,7 +102,7 @@ public class EventColors {
                 this.seriesNameColor.put("CopyFileWrite", new Color(41,214,21));
                 this.seriesNameColor.put("DataFileExtend", new Color(42,213,234));
                 this.seriesNameColor.put("DataFileFlush", new Color(43,212,22));
-                this.seriesNameColor.put("DataFileImmediateSync", new Color(44,211,233));
+                this.seriesNameColor.put("DataFileImmediateSync", new Color(0,79,0));
                 this.seriesNameColor.put("DataFilePrefetch", new Color(45,210,23));
                 this.seriesNameColor.put("DataFileRead", new Color(0,74,231));
                 this.seriesNameColor.put("DataFileSync", new Color(47,208,24));
