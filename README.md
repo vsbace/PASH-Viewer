@@ -55,4 +55,4 @@
 
    PASH Viewer URL
    ----------
-   https://github.com/dbacvetkov/PASH-Viewer
+   https://github.com/stopitallready/PASH-Viewer
